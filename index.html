@@ -1,805 +1,2001 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>حاسبة المطبعة</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>حاسبة المطبعة الاحترافية</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap"
+      rel="stylesheet"
+    />
     <style>
-        :root {
-            --ink: #0d0d0d;
-            --paper: #f5f0e8;
-            --press-blue: #1a3a5c;
-            --gold: #c9a84c;
-            --gold-light: #e8d08a;
-            --crimson: #8b1a1a;
-            --success: #1a6b3a;
-            --surface: #ffffff;
-            --surface2: #f9f5ee;
-            --border: #d4c9a8;
-            --shadow: rgba(26,58,92,0.12);
-            --text-muted: #7a6e58;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: 'Cairo', sans-serif;
-            background: var(--paper);
-            color: var(--ink);
-            min-height: 100vh;
-            background-image:
-                radial-gradient(ellipse at 10% 20%, rgba(201,168,76,0.08) 0%, transparent 50%),
-                radial-gradient(ellipse at 90% 80%, rgba(26,58,92,0.06) 0%, transparent 50%);
-        }
-        header {
-            background: var(--press-blue);
-            color: white;
-            padding: 20px 40px 0;
-            position: relative;
-            overflow: hidden;
-        }
-        header::before {
-            content:'';position:absolute;top:0;left:0;right:0;bottom:0;
-            background:linear-gradient(135deg,rgba(201,168,76,.15) 0%,transparent 60%);pointer-events:none;
-        }
-        .header-top { display:flex;align-items:center;justify-content:space-between;padding-bottom:16px; }
-        .header-title { display:flex;align-items:center;gap:14px; }
-        .header-icon {
-            width:48px;height:48px;background:linear-gradient(135deg,var(--gold),var(--gold-light));
-            border-radius:12px;display:flex;align-items:center;justify-content:center;
-            font-size:24px;box-shadow:0 4px 12px rgba(201,168,76,.4);
-        }
-        header h1 { font-size:1.5rem;font-weight:900; }
-        header p { font-size:.78rem;color:rgba(255,255,255,.6);font-weight:300; }
-        .header-badge {
-            background:rgba(201,168,76,.2);border:1px solid rgba(201,168,76,.4);
-            color:var(--gold-light);padding:6px 14px;border-radius:20px;font-size:.75rem;font-weight:600;
-        }
-        .tabs-nav {
-            display:flex;padding:0 20px;gap:4px;
-            border-bottom:3px solid rgba(201,168,76,.4);
-        }
-        .tab-btn {
-            padding:13px 20px;background:none;border:none;
-            color:rgba(255,255,255,.5);font-family:'Cairo',sans-serif;
-            font-size:.86rem;font-weight:600;cursor:pointer;
-            border-bottom:3px solid transparent;margin-bottom:-3px;transition:all .2s;
-            display:flex;align-items:center;gap:6px;
-        }
-        .tab-btn:hover { color:rgba(255,255,255,.8); }
-        .tab-btn.active { color:white;border-bottom-color:var(--gold); }
-        .tab-badge {
-            background:var(--gold);color:#1a1a0a;
-            border-radius:10px;padding:1px 7px;font-size:.7rem;font-weight:700;
-        }
-        .tab-badge.green { background:var(--success);color:white; }
-        .tab-panel { display:none; }
-        .tab-panel.active { display:block; }
-        .container { max-width:1100px;margin:0 auto;padding:26px 22px; }
-        .grid { display:grid;grid-template-columns:1fr 1fr;gap:18px; }
-        .mb { margin-bottom:18px; }
-        .card {
-            background:var(--surface);border-radius:16px;border:1px solid var(--border);
-            padding:20px;box-shadow:0 2px 12px var(--shadow);transition:box-shadow .2s;
-        }
-        .card:hover { box-shadow:0 4px 24px var(--shadow); }
-        .card.full { grid-column:1/-1; }
-        .card.highlighted { border-color:var(--gold);background:linear-gradient(135deg,#fffdf5 0%,#fff 100%); }
-        .card-header {
-            display:flex;align-items:center;gap:10px;
-            margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid var(--border);
-        }
-        .card-icon {
-            width:33px;height:33px;border-radius:9px;display:flex;
-            align-items:center;justify-content:center;font-size:16px;flex-shrink:0;
-        }
-        .ci-blue{background:rgba(26,58,92,.1)}.ci-gold{background:rgba(201,168,76,.15)}
-        .ci-red{background:rgba(139,26,26,.1)}.ci-green{background:rgba(26,107,58,.1)}
-        .ci-purple{background:rgba(80,40,120,.1)}
-        .card-header h2 { font-size:.95rem;font-weight:700;color:var(--press-blue); }
-        .card-header p { font-size:.72rem;color:var(--text-muted); }
-        label { display:block;font-size:.78rem;font-weight:600;color:var(--press-blue);margin-bottom:5px; }
-        input[type="number"],input[type="text"],select {
-            width:100%;padding:9px 13px;border:1.5px solid var(--border);border-radius:10px;
-            font-family:'Cairo',sans-serif;font-size:.87rem;color:var(--ink);
-            background:var(--surface2);transition:border-color .2s,box-shadow .2s;
-            outline:none;margin-bottom:13px;direction:ltr;text-align:right;
-        }
-        input[type="text"] { direction:rtl; }
-        input:focus,select:focus {
-            border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,.15);background:white;
-        }
-        .field-row { display:grid;grid-template-columns:1fr 1fr;gap:11px; }
-        .btn-group { display:flex;gap:7px;flex-wrap:wrap;margin-bottom:13px; }
-        .btn-toggle {
-            padding:7px 13px;border-radius:8px;border:1.5px solid var(--border);
-            background:var(--surface2);color:var(--text-muted);font-family:'Cairo',sans-serif;
-            font-size:.79rem;font-weight:600;cursor:pointer;transition:all .18s;
-        }
-        .btn-toggle:hover { border-color:var(--gold);color:var(--press-blue); }
-        .btn-toggle.active { background:var(--press-blue);border-color:var(--press-blue);color:white; }
-        .section-title {
-            font-size:.67rem;font-weight:700;text-transform:uppercase;
-            letter-spacing:1.5px;color:var(--text-muted);margin-bottom:7px;
-        }
-        .divider { height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:12px 0; }
-        .calc-btn {
-            width:100%;padding:12px;background:linear-gradient(135deg,var(--press-blue),#0f2940);
-            color:white;border:none;border-radius:12px;font-family:'Cairo',sans-serif;
-            font-size:.95rem;font-weight:700;cursor:pointer;
-            transition:all .2s;box-shadow:0 4px 16px rgba(26,58,92,.3);margin-top:7px;
-        }
-        .calc-btn:hover { transform:translateY(-1px);box-shadow:0 6px 20px rgba(26,58,92,.4); }
-        .calc-btn:active { transform:translateY(0); }
-        .clear-btn {
-            width:100%;padding:9px;background:transparent;color:var(--text-muted);
-            border:1.5px solid var(--border);border-radius:10px;font-family:'Cairo',sans-serif;
-            font-size:.82rem;cursor:pointer;margin-top:7px;transition:all .2s;
-        }
-        .clear-btn:hover { border-color:var(--crimson);color:var(--crimson); }
-        .results-area {
-            background:linear-gradient(135deg,var(--press-blue),#0f2940);
-            border-radius:14px;padding:22px;color:white;
-            position:relative;overflow:hidden;min-height:100px;
-        }
-        .results-area::before {
-            content:'';position:absolute;top:-40px;right:-40px;
-            width:160px;height:160px;border-radius:50%;
-            background:rgba(201,168,76,.1);pointer-events:none;
-        }
-        .results-placeholder {
-            text-align:center;color:rgba(255,255,255,.3);font-size:.87rem;padding:24px 0;
-        }
-        .results-placeholder .icon { font-size:2.1rem;display:block;margin-bottom:7px; }
-        .result-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:10px; }
-        .result-item {
-            background:rgba(255,255,255,.08);border-radius:10px;padding:11px;
-            border:1px solid rgba(255,255,255,.1);position:relative;z-index:1;
-        }
-        .result-item label { color:rgba(255,255,255,.55);font-size:.69rem;margin-bottom:3px;font-weight:400; }
-        .result-item .val { font-size:1.08rem;font-weight:700;color:white; }
-        .result-item .val.gold { color:var(--gold-light); }
-        .result-item .unit { font-size:.68rem;color:rgba(255,255,255,.45);margin-top:2px; }
-        .raj-breakdown {
-            background:rgba(255,255,255,.06);border-radius:8px;padding:9px 13px;
-            margin-top:8px;font-size:.74rem;color:rgba(255,255,255,.6);
-            position:relative;z-index:1;border:1px solid rgba(255,255,255,.08);
-        }
-        .raj-breakdown strong { color:rgba(255,255,255,.85); }
-        .total-bar {
-            background:linear-gradient(135deg,var(--gold),#b8922e);border-radius:11px;
-            padding:13px 17px;display:flex;justify-content:space-between;align-items:center;
-            margin-top:11px;position:relative;z-index:1;
-        }
-        .total-bar .tlabel { font-size:.82rem;color:rgba(0,0,0,.65);font-weight:600; }
-        .total-bar .amount { font-size:1.42rem;font-weight:900;color:#1a1a0a; }
-        .size-info { display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap; }
-        .size-badge {
-            background:rgba(26,58,92,.08);border:1px solid rgba(26,58,92,.15);
-            border-radius:8px;padding:5px 10px;font-size:.75rem;color:var(--press-blue);font-weight:600;
-        }
-        .cut-preview {
-            display:flex;gap:9px;align-items:center;
-            background:var(--surface2);border:1.5px dashed var(--border);
-            border-radius:10px;padding:10px;margin-bottom:12px;
-        }
-        .cut-visual {
-            width:54px;height:42px;background:white;border:1.5px solid var(--border);
-            border-radius:4px;display:grid;gap:2px;padding:4px;flex-shrink:0;
-        }
-        .cut-visual .cell { background:rgba(26,58,92,.15);border-radius:2px; }
-        .cut-info { font-size:.77rem;color:var(--text-muted); }
-        .cut-info strong { color:var(--press-blue);display:block;font-size:.82rem; }
-        .raj-preview-box {
-            font-size:.77rem;color:var(--text-muted);background:var(--surface2);
-            border-radius:8px;padding:9px 12px;border:1px solid var(--border);line-height:1.6;
-        }
-        .info-pill {
-            display:inline-flex;align-items:center;gap:4px;background:rgba(26,58,92,.08);
-            border-radius:20px;padding:2px 9px;font-size:.69rem;color:var(--press-blue);font-weight:600;margin:2px;
-        }
-        .section-header {
-            display:flex;align-items:center;justify-content:space-between;
-            margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--border);
-        }
-        .section-header h3 { font-size:.93rem;font-weight:700;color:var(--press-blue); }
-        .section-header small { font-size:.74rem;color:var(--text-muted); }
-        .order-card {
-            background:var(--surface);border:1.5px solid var(--border);border-radius:12px;
-            padding:14px 17px;margin-bottom:10px;display:flex;
-            justify-content:space-between;align-items:flex-start;gap:13px;
-            transition:border-color .2s,box-shadow .2s;
-        }
-        .order-card:hover { border-color:var(--gold);box-shadow:0 2px 14px var(--shadow); }
-        .order-card.done-card { border-color:rgba(26,107,58,.3);background:#f4fdf7; }
-        .order-client { font-size:.97rem;font-weight:700;color:var(--press-blue);margin-bottom:3px; }
-        .no-name { color:var(--text-muted);font-weight:400;font-style:italic; }
-        .order-meta { font-size:.73rem;color:var(--text-muted);display:flex;flex-wrap:wrap;gap:5px;margin-bottom:4px; }
-        .order-detail { font-size:.77rem;color:var(--ink); }
-        .order-time { font-size:.69rem;color:var(--text-muted);margin-top:4px; }
-        .order-actions { display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0; }
-        .order-price { font-size:1.12rem;font-weight:700;color:var(--success);white-space:nowrap; }
-        .order-price.done-price { color:#999;text-decoration:line-through;font-size:.93rem; }
-        .action-row { display:flex;gap:5px; }
-        .act-btn {
-            padding:5px 11px;border-radius:7px;border:1.5px solid var(--border);
-            background:var(--surface2);font-family:'Cairo',sans-serif;font-size:.74rem;
-            font-weight:600;cursor:pointer;transition:all .18s;color:var(--text-muted);
-        }
-        .act-btn:hover { border-color:var(--gold);color:var(--press-blue); }
-        .act-btn.done-btn:hover { border-color:var(--success);color:var(--success);background:#f4fdf7; }
-        .act-btn.del-act:hover { border-color:var(--crimson);color:var(--crimson);background:#fdf4f4; }
-        .act-btn.restore-act:hover { border-color:var(--press-blue);color:var(--press-blue); }
-        .done-badge {
-            display:inline-flex;align-items:center;gap:4px;background:rgba(26,107,58,.12);
-            color:var(--success);border-radius:20px;padding:2px 9px;font-size:.71rem;font-weight:700;
-        }
-        .empty-state {
-            text-align:center;color:var(--text-muted);font-size:.84rem;padding:26px;
-            background:var(--surface2);border-radius:12px;border:1.5px dashed var(--border);
-        }
-        .empty-state .icon { font-size:2rem;display:block;margin-bottom:7px; }
-        .toast {
-            position:fixed;bottom:24px;left:50%;
-            transform:translateX(-50%) translateY(80px);
-            background:var(--press-blue);color:white;padding:10px 22px;
-            border-radius:30px;font-size:.84rem;font-weight:600;
-            box-shadow:0 8px 24px rgba(0,0,0,.2);z-index:999;transition:transform .3s ease;
-        }
-        .toast.show { transform:translateX(-50%) translateY(0); }
-        @media(max-width:768px){
-            .grid{grid-template-columns:1fr}
-            .card.full{grid-column:1}
-            .container{padding:13px}
-            .result-grid{grid-template-columns:1fr 1fr}
-        }
+      :root {
+        --ink: #0d0d0d;
+        --paper: #f5f0e8;
+        --press-blue: #1a3a5c;
+        --gold: #c9a84c;
+        --gold-light: #e8d08a;
+        --crimson: #8b1a1a;
+        --success: #1a6b3a;
+        --whatsapp: #25d366;
+        --whatsapp-dark: #128c7e;
+        --surface: #ffffff;
+        --surface2: #f9f5ee;
+        --border: #d4c9a8;
+        --shadow: rgba(26, 58, 92, 0.12);
+        --text-muted: #7a6e58;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Cairo", sans-serif;
+        background: var(--paper);
+        color: var(--ink);
+        min-height: 100vh;
+        background-image:
+          radial-gradient(ellipse at 10% 20%, rgba(201, 168, 76, 0.08) 0%, transparent 50%),
+          radial-gradient(ellipse at 90% 80%, rgba(26, 58, 92, 0.06) 0%, transparent 50%);
+      }
+      header {
+        background: var(--press-blue);
+        color: white;
+        padding: 20px 40px 0;
+        position: relative;
+        overflow: hidden;
+      }
+      header::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(201, 168, 76, 0.15) 0%, transparent 60%);
+        pointer-events: none;
+      }
+      .header-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-bottom: 16px;
+      }
+      .header-title {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .header-icon {
+        width: 48px;
+        height: 48px;
+        background: linear-gradient(135deg, var(--gold), var(--gold-light));
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        box-shadow: 0 4px 12px rgba(201, 168, 76, 0.4);
+      }
+      header h1 {
+        font-size: 1.5rem;
+        font-weight: 900;
+      }
+      header p {
+        font-size: 0.78rem;
+        color: rgba(255, 255, 255, 0.65);
+        font-weight: 300;
+      }
+      .header-badge {
+        background: rgba(201, 168, 76, 0.2);
+        border: 1px solid rgba(201, 168, 76, 0.4);
+        color: var(--gold-light);
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 700;
+      }
+      .tabs-nav {
+        display: flex;
+        padding: 0 20px;
+        gap: 4px;
+        border-bottom: 3px solid rgba(201, 168, 76, 0.4);
+      }
+      .tab-btn {
+        padding: 13px 20px;
+        background: none;
+        border: none;
+        color: rgba(255, 255, 255, 0.55);
+        font-family: "Cairo", sans-serif;
+        font-size: 0.88rem;
+        font-weight: 700;
+        cursor: pointer;
+        border-bottom: 3px solid transparent;
+        margin-bottom: -3px;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .tab-btn:hover {
+        color: rgba(255, 255, 255, 0.85);
+      }
+      .tab-btn.active {
+        color: white;
+        border-bottom-color: var(--gold);
+      }
+      .tab-badge {
+        background: var(--gold);
+        color: #1a1a0a;
+        border-radius: 10px;
+        padding: 1px 8px;
+        font-size: 0.72rem;
+        font-weight: 800;
+      }
+      .tab-badge.green {
+        background: var(--success);
+        color: white;
+      }
+      .tab-panel {
+        display: none;
+      }
+      .tab-panel.active {
+        display: block;
+      }
+      .container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 26px 22px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+      }
+      .mb {
+        margin-bottom: 18px;
+      }
+      .card {
+        background: var(--surface);
+        border-radius: 16px;
+        border: 1px solid var(--border);
+        padding: 20px;
+        box-shadow: 0 2px 12px var(--shadow);
+        transition: box-shadow 0.2s;
+      }
+      .card:hover {
+        box-shadow: 0 4px 24px var(--shadow);
+      }
+      .card.full {
+        grid-column: 1/-1;
+      }
+      .card.highlighted {
+        border-color: var(--gold);
+        background: linear-gradient(135deg, #fffdf5 0%, #fff 100%);
+      }
+      .card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid var(--border);
+      }
+      .card-header-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .card-icon {
+        width: 35px;
+        height: 35px;
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 17px;
+        flex-shrink: 0;
+      }
+      .ci-blue { background: rgba(26, 58, 92, 0.1); }
+      .ci-gold { background: rgba(201, 168, 76, 0.15); }
+      .ci-red { background: rgba(139, 26, 26, 0.1); }
+      .ci-green { background: rgba(26, 107, 58, 0.1); }
+      .ci-purple { background: rgba(80, 40, 120, 0.1); }
+      .card-header h2 {
+        font-size: 0.98rem;
+        font-weight: 700;
+        color: var(--press-blue);
+      }
+      .card-header p {
+        font-size: 0.72rem;
+        color: var(--text-muted);
+      }
+      label {
+        display: block;
+        font-size: 0.79rem;
+        font-weight: 700;
+        color: var(--press-blue);
+        margin-bottom: 5px;
+      }
+      input[type="number"],
+      input[type="text"],
+      input[type="tel"],
+      select {
+        width: 100%;
+        padding: 9px 13px;
+        border: 1.5px solid var(--border);
+        border-radius: 10px;
+        font-family: "Cairo", sans-serif;
+        font-size: 0.88rem;
+        color: var(--ink);
+        background: var(--surface2);
+        transition: border-color 0.2s, box-shadow 0.2s;
+        outline: none;
+        margin-bottom: 12px;
+        direction: ltr;
+        text-align: right;
+      }
+      input[type="text"] {
+        direction: rtl;
+      }
+      input:focus,
+      select:focus {
+        border-color: var(--gold);
+        box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.15);
+        background: white;
+      }
+      .field-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 11px;
+      }
+      .btn-group {
+        display: flex;
+        gap: 7px;
+        flex-wrap: wrap;
+        margin-bottom: 13px;
+      }
+      .btn-toggle {
+        padding: 7px 13px;
+        border-radius: 8px;
+        border: 1.5px solid var(--border);
+        background: var(--surface2);
+        color: var(--text-muted);
+        font-family: "Cairo", sans-serif;
+        font-size: 0.8rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.18s;
+        flex: 1;
+        text-align: center;
+        min-width: fit-content;
+      }
+      .btn-toggle:hover {
+        border-color: var(--gold);
+        color: var(--press-blue);
+      }
+      .btn-toggle.active {
+        background: var(--press-blue);
+        border-color: var(--press-blue);
+        color: white;
+      }
+      .preset-chips {
+        display: flex;
+        gap: 5px;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+      }
+      .preset-chip {
+        padding: 3px 9px;
+        font-size: 0.72rem;
+        font-family: "Cairo", sans-serif;
+        font-weight: 600;
+        background: rgba(201, 168, 76, 0.12);
+        border: 1px solid rgba(201, 168, 76, 0.35);
+        color: var(--press-blue);
+        border-radius: 6px;
+        cursor: pointer;
+        transition: 0.15s;
+      }
+      .preset-chip:hover {
+        background: var(--gold);
+        color: #fff;
+      }
+      .section-title {
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        margin-bottom: 6px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .divider {
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--border), transparent);
+        margin: 12px 0;
+      }
+      .calc-btn {
+        width: 100%;
+        padding: 12px;
+        background: linear-gradient(135deg, var(--press-blue), #0f2940);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-family: "Cairo", sans-serif;
+        font-size: 0.92rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+        box-shadow: 0 4px 14px rgba(26, 58, 92, 0.25);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+      }
+      .calc-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 18px rgba(26, 58, 92, 0.35);
+      }
+      .wa-btn-summary {
+        background: linear-gradient(135deg, #25d366, #128c7e);
+        box-shadow: 0 4px 14px rgba(37, 211, 102, 0.3);
+      }
+      .wa-btn-summary:hover {
+        box-shadow: 0 6px 18px rgba(37, 211, 102, 0.45);
+      }
+      .wa-btn-detail {
+        background: linear-gradient(135deg, #1a3a5c, #0f2940);
+        border: 1px solid var(--gold);
+      }
+      .clear-btn {
+        width: 100%;
+        padding: 10px;
+        background: transparent;
+        color: var(--text-muted);
+        border: 1.5px solid var(--border);
+        border-radius: 12px;
+        font-family: "Cairo", sans-serif;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .clear-btn:hover {
+        border-color: var(--crimson);
+        color: var(--crimson);
+        background: #fff5f5;
+      }
+      /* Profit & WhatsApp Box */
+      .share-box {
+        background: #f2fbf5;
+        border: 1.5px solid #a8e6c1;
+        border-radius: 14px;
+        padding: 15px;
+        margin-top: 14px;
+      }
+      .share-box-title {
+        font-size: 0.84rem;
+        font-weight: 800;
+        color: var(--whatsapp-dark);
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .profit-row {
+        display: grid;
+        grid-template-columns: 1.2fr 1fr;
+        gap: 12px;
+        align-items: center;
+        background: white;
+        padding: 12px;
+        border-radius: 10px;
+        border: 1px solid #ccebd8;
+        margin-bottom: 12px;
+      }
+      .profit-input-wrap {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+      }
+      .profit-input-wrap input {
+        margin-bottom: 0;
+        flex: 1;
+      }
+      .profit-mode-btn {
+        padding: 8px 12px;
+        border-radius: 8px;
+        border: 1.5px solid var(--border);
+        background: var(--surface2);
+        font-family: "Cairo", sans-serif;
+        font-size: 0.78rem;
+        font-weight: 700;
+        cursor: pointer;
+        color: var(--press-blue);
+        white-space: nowrap;
+      }
+      .profit-mode-btn.active {
+        background: var(--gold);
+        border-color: var(--gold);
+        color: #1a1a0a;
+      }
+      .client-final-preview {
+        background: linear-gradient(135deg, #e8f8ee, #d3f2df);
+        border: 1px solid #86d9a8;
+        border-radius: 9px;
+        padding: 8px 12px;
+        text-align: center;
+      }
+      .client-final-preview .lbl {
+        font-size: 0.72rem;
+        color: var(--whatsapp-dark);
+        font-weight: 700;
+      }
+      .client-final-preview .final-num {
+        font-size: 1.25rem;
+        font-weight: 900;
+        color: var(--success);
+      }
+      .client-final-preview .profit-sub {
+        font-size: 0.69rem;
+        color: var(--text-muted);
+      }
+      .share-buttons-row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .results-area {
+        background: linear-gradient(135deg, var(--press-blue), #0f2940);
+        border-radius: 14px;
+        padding: 22px;
+        color: white;
+        position: relative;
+        overflow: hidden;
+        min-height: 100px;
+      }
+      .results-area::before {
+        content: "";
+        position: absolute;
+        top: -40px;
+        right: -40px;
+        width: 160px;
+        height: 160px;
+        border-radius: 50%;
+        background: rgba(201, 168, 76, 0.1);
+        pointer-events: none;
+      }
+      .results-placeholder {
+        text-align: center;
+        color: rgba(255, 255, 255, 0.4);
+        font-size: 0.88rem;
+        padding: 24px 0;
+      }
+      .results-placeholder .icon {
+        font-size: 2.1rem;
+        display: block;
+        margin-bottom: 7px;
+      }
+      .result-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+      }
+      .result-item {
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 10px;
+        padding: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        position: relative;
+        z-index: 1;
+      }
+      .result-item label {
+        color: rgba(255, 255, 255, 0.65);
+        font-size: 0.72rem;
+        margin-bottom: 3px;
+        font-weight: 400;
+      }
+      .result-item .val {
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: white;
+      }
+      .result-item .val.gold {
+        color: var(--gold-light);
+      }
+      .result-item .unit {
+        font-size: 0.7rem;
+        color: rgba(255, 255, 255, 0.5);
+        margin-top: 2px;
+      }
+      .raj-breakdown {
+        background: rgba(255, 255, 255, 0.06);
+        border-radius: 8px;
+        padding: 10px 14px;
+        margin-top: 10px;
+        font-size: 0.78rem;
+        color: rgba(255, 255, 255, 0.75);
+        position: relative;
+        z-index: 1;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .raj-breakdown strong {
+        color: var(--gold-light);
+      }
+      .total-bar {
+        background: linear-gradient(135deg, var(--gold), #b8922e);
+        border-radius: 11px;
+        padding: 14px 18px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 12px;
+        position: relative;
+        z-index: 1;
+      }
+      .total-bar .tlabel {
+        font-size: 0.88rem;
+        color: rgba(0, 0, 0, 0.75);
+        font-weight: 700;
+      }
+      .total-bar .amount {
+        font-size: 1.5rem;
+        font-weight: 900;
+        color: #1a1a0a;
+      }
+      .size-info {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 12px;
+        flex-wrap: wrap;
+      }
+      .size-badge {
+        background: rgba(26, 58, 92, 0.08);
+        border: 1px solid rgba(26, 58, 92, 0.15);
+        border-radius: 8px;
+        padding: 5px 10px;
+        font-size: 0.75rem;
+        color: var(--press-blue);
+        font-weight: 700;
+      }
+      .cut-preview {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        background: var(--surface2);
+        border: 1.5px dashed var(--gold);
+        border-radius: 10px;
+        padding: 10px;
+        margin-bottom: 12px;
+      }
+      .cut-visual {
+        width: 54px;
+        height: 42px;
+        background: white;
+        border: 1.5px solid var(--border);
+        border-radius: 4px;
+        display: grid;
+        gap: 2px;
+        padding: 4px;
+        flex-shrink: 0;
+      }
+      .cut-visual .cell {
+        background: var(--press-blue);
+        opacity: 0.25;
+        border-radius: 2px;
+      }
+      .cut-info {
+        font-size: 0.77rem;
+        color: var(--text-muted);
+      }
+      .cut-info strong {
+        color: var(--press-blue);
+        display: block;
+        font-size: 0.84rem;
+      }
+      .raj-preview-box {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        background: var(--surface2);
+        border-radius: 8px;
+        padding: 10px 12px;
+        border: 1px solid var(--border);
+        line-height: 1.6;
+      }
+      .sync-label {
+        font-size: 0.72rem;
+        color: var(--success);
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        cursor: pointer;
+        user-select: none;
+        font-weight: 700;
+      }
+      .sync-label input {
+        margin: 0;
+        width: auto;
+        cursor: pointer;
+      }
+      .info-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: rgba(26, 58, 92, 0.08);
+        border-radius: 20px;
+        padding: 2px 9px;
+        font-size: 0.71rem;
+        color: var(--press-blue);
+        font-weight: 700;
+        margin: 2px;
+      }
+      .section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 14px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid var(--border);
+      }
+      .section-header h3 {
+        font-size: 0.96rem;
+        font-weight: 700;
+        color: var(--press-blue);
+      }
+      .order-card {
+        background: var(--surface);
+        border: 1.5px solid var(--border);
+        border-radius: 12px;
+        padding: 14px 17px;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 13px;
+        transition: border-color 0.2s, box-shadow 0.2s;
+      }
+      .order-card:hover {
+        border-color: var(--gold);
+        box-shadow: 0 2px 14px var(--shadow);
+      }
+      .order-card.done-card {
+        border-color: rgba(26, 107, 58, 0.3);
+        background: #f4fdf7;
+      }
+      .order-client {
+        font-size: 0.98rem;
+        font-weight: 700;
+        color: var(--press-blue);
+        margin-bottom: 3px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .phone-tag {
+        font-size: 0.73rem;
+        background: #e9f5ee;
+        color: var(--whatsapp-dark);
+        padding: 1px 8px;
+        border-radius: 12px;
+        font-weight: 600;
+        direction: ltr;
+      }
+      .no-name {
+        color: var(--text-muted);
+        font-weight: 400;
+        font-style: italic;
+      }
+      .order-meta {
+        font-size: 0.73rem;
+        color: var(--text-muted);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        margin: 5px 0;
+      }
+      .order-detail {
+        font-size: 0.78rem;
+        color: var(--ink);
+        margin-top: 3px;
+      }
+      .order-time {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        margin-top: 6px;
+      }
+      .order-actions {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 6px;
+        flex-shrink: 0;
+      }
+      .order-price {
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: var(--success);
+        white-space: nowrap;
+      }
+      .order-price.done-price {
+        color: #888;
+        text-decoration: line-through;
+        font-size: 0.95rem;
+      }
+      .action-row {
+        display: flex;
+        gap: 5px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+      .act-btn {
+        padding: 5px 10px;
+        border-radius: 7px;
+        border: 1.5px solid var(--border);
+        background: var(--surface2);
+        font-family: "Cairo", sans-serif;
+        font-size: 0.72rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.18s;
+        color: var(--text-muted);
+      }
+      .act-btn:hover {
+        border-color: var(--gold);
+        color: var(--press-blue);
+      }
+      .act-btn.wa-act {
+        border-color: rgba(37, 211, 102, 0.45);
+        color: var(--whatsapp-dark);
+        background: #f2fbf5;
+      }
+      .act-btn.wa-act:hover {
+        background: var(--whatsapp);
+        color: white;
+        border-color: var(--whatsapp);
+      }
+      .act-btn.done-btn:hover {
+        border-color: var(--success);
+        color: var(--success);
+        background: #f4fdf7;
+      }
+      .act-btn.del-act:hover {
+        border-color: var(--crimson);
+        color: var(--crimson);
+        background: #fdf4f4;
+      }
+      .done-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: rgba(26, 107, 58, 0.12);
+        color: var(--success);
+        border-radius: 20px;
+        padding: 2px 9px;
+        font-size: 0.71rem;
+        font-weight: 700;
+      }
+      .empty-state {
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        padding: 26px;
+        background: var(--surface2);
+        border-radius: 12px;
+        border: 1.5px dashed var(--border);
+      }
+      .empty-state .icon {
+        font-size: 2rem;
+        display: block;
+        margin-bottom: 7px;
+      }
+      .toast {
+        position: fixed;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%) translateY(100px);
+        background: var(--press-blue);
+        color: white;
+        padding: 10px 24px;
+        border-radius: 30px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+        z-index: 999;
+        transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        border: 1px solid var(--gold);
+      }
+      .toast.show {
+        transform: translateX(-50%) translateY(0);
+      }
+      @media (max-width: 768px) {
+        header { padding: 16px 16px 0; }
+        .grid { grid-template-columns: 1fr; }
+        .card.full { grid-column: 1; }
+        .container { padding: 14px; }
+        .result-grid { grid-template-columns: 1fr 1fr; }
+        .profit-row { grid-template-columns: 1fr; }
+        .order-card { flex-direction: column; }
+        .order-actions { width: 100%; align-items: stretch; border-top: 1px dashed var(--border); padding-top: 8px; }
+        .action-row { justify-content: flex-start; }
+      }
     </style>
-</head>
-<body>
-
-<header>
-    <div class="header-top">
+  </head>
+  <body>
+    <header>
+      <div class="header-top">
         <div class="header-title">
-            <div class="header-icon">🖨️</div>
-            <div>
-                <h1>حاسبة المطبعة</h1>
-                <p>نظام حسابات الطباعة الاحترافي</p>
+          <div class="header-icon">🖨️</div>
+          <div>
+            <h1>حاسبة المطبعة</h1>
+            <p>نظام حسابات الطباعة وحساب الأرباح ومشاركة واتساب</p>
+          </div>
+        </div>
+        <div class="header-badge">v3.2 Profit+</div>
+      </div>
+      <div class="tabs-nav">
+        <button class="tab-btn active" onclick="switchTab('calc', this)">
+          🧮 الحاسبة
+        </button>
+        <button class="tab-btn" onclick="switchTab('orders', this)">
+          📋 الطلبات الجارية <span class="tab-badge" id="pendingBadge">0</span>
+        </button>
+        <button class="tab-btn" onclick="switchTab('done', this)">
+          ✅ المسلّمة <span class="tab-badge green" id="doneBadge">0</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- TAB: CALCULATOR -->
+    <div class="tab-panel active" id="tab-calc">
+      <div class="container">
+        <div class="grid mb">
+          <!-- Paper Settings -->
+          <div class="card highlighted">
+            <div class="card-header">
+              <div class="card-header-left">
+                <div class="card-icon ci-blue">📄</div>
+                <div>
+                  <h2>إعدادات الورق</h2>
+                  <p>نوع الفرخ والجرام وسعر الطن</p>
+                </div>
+              </div>
             </div>
+            <div class="section-title">نوع الفرخ</div>
+            <div class="btn-group" id="paperTypeGroup">
+              <button class="btn-toggle active" onclick="selectPaperType('70x100', this)">
+                فرخ 70×100
+              </button>
+              <button class="btn-toggle" onclick="selectPaperType('66x88', this)">
+                فرخ 66×88 (جاير)
+              </button>
+            </div>
+            <div id="paperInfo70" class="size-info">
+              <span class="size-badge">📐 مقاس الربع: 35×50 سم</span>
+              <span class="size-badge">✂️ الفرخ = 4 ورقات ربع</span>
+            </div>
+            <div id="paperInfo66" class="size-info" style="display: none">
+              <span class="size-badge">📐 مقاس الربع الجاير: 33×44 سم</span>
+              <span class="size-badge">✂️ الفرخ = 4 ورقات ربع</span>
+            </div>
+            <div class="divider"></div>
+            <div class="section-title">جرام الورق (كوشيه / طبع)</div>
+            <div class="btn-group" id="grammageGroup">
+              <button class="btn-toggle" onclick="selectGrammage(70, this)">70</button>
+              <button class="btn-toggle" onclick="selectGrammage(80, this)">80</button>
+              <button class="btn-toggle" onclick="selectGrammage(115, this)">115</button>
+              <button class="btn-toggle" onclick="selectGrammage(130, this)">130</button>
+              <button class="btn-toggle active" onclick="selectGrammage(150, this)">150</button>
+              <button class="btn-toggle" onclick="selectGrammage(200, this)">200</button>
+              <button class="btn-toggle" onclick="selectGrammage(250, this)">250</button>
+              <button class="btn-toggle" onclick="selectGrammage(300, this)">300</button>
+              <button class="btn-toggle" onclick="selectGrammage(350, this)">350</button>
+            </div>
+            <div class="divider"></div>
+            <label>سعر الطن (بالألف جنيه) — يُحفظ تلقائياً</label>
+            <input
+              type="number"
+              id="tonPrice"
+              placeholder="مثال: 58 (يعني 58,000 جنيه)"
+              min="0"
+              step="any"
+              oninput="onTonPriceInput()"
+            />
+          </div>
+
+          <!-- Design & Quantity -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-header-left">
+                <div class="card-icon ci-gold">📏</div>
+                <div>
+                  <h2>مقاس التصميم والكمية</h2>
+                  <p>اختار مقاس جاهز أو اكتب الأبعاد يدوياً</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-title">
+              <span>مقاسات سريعة (تلقائي):</span>
+            </div>
+            <div class="preset-chips">
+              <button type="button" class="preset-chip" onclick="setPresetSize(21, 29.7)">A4 (21×29.7)</button>
+              <button type="button" class="preset-chip" onclick="setPresetSize(14.8, 21)">A5 (14.8×21)</button>
+              <button type="button" class="preset-chip" onclick="setPresetSize(10.5, 14.8)">A6 (10.5×14.8)</button>
+              <button type="button" class="preset-chip" onclick="setPresetSize(9, 5.5)">كارت شخصي (9×5.5)</button>
+              <button type="button" class="preset-chip" onclick="setPresetSize(17, 24)">17×24 سم</button>
+            </div>
+
+            <div class="field-row">
+              <div>
+                <label>طول التصميم (سم)</label>
+                <input
+                  type="number"
+                  id="designLength"
+                  placeholder="مثال: 21"
+                  min="0"
+                  step="any"
+                  oninput="onDesignSizeChange()"
+                />
+              </div>
+              <div>
+                <label>عرض التصميم (سم)</label>
+                <input
+                  type="number"
+                  id="designWidth"
+                  placeholder="مثال: 14.8"
+                  min="0"
+                  step="any"
+                  oninput="onDesignSizeChange()"
+                />
+              </div>
+            </div>
+
+            <div class="cut-preview" id="cutPreview" style="display: none">
+              <div class="cut-visual" id="cutVisual"></div>
+              <div class="cut-info">
+                <strong id="cutCountText">—</strong>
+                <span id="cutDetails">—</span>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="field-row">
+              <div>
+                <label>عدد الأوراق الربع المطلوبة</label>
+                <input
+                  type="number"
+                  id="quarterSheetsInput"
+                  placeholder="مثال: 1000"
+                  min="0"
+                  step="any"
+                  oninput="onQuarterInput()"
+                />
+              </div>
+              <div>
+                <label>أو الكمية بالقطعة (اختياري)</label>
+                <input
+                  type="number"
+                  id="targetPiecesInput"
+                  placeholder="مثال: 4000 فلاير"
+                  min="0"
+                  step="any"
+                  oninput="onPiecesInput()"
+                />
+              </div>
+            </div>
+            <small style="color: var(--text-muted); display: block; margin-top: -6px;">
+              💡 يمكنك كتابة عدد الورق الربع مباشرة، أو كتابة عدد القطع النهائية للعميل وسيحسب الورق تلقائياً.
+            </small>
+          </div>
         </div>
-        <div class="header-badge">v2.1</div>
-    </div>
-    <div class="tabs-nav">
-        <button class="tab-btn active" onclick="switchTab('calc',this)">🧮 الحساب</button>
-        <button class="tab-btn" onclick="switchTab('orders',this)">📋 الطلبات <span class="tab-badge" id="pendingBadge">0</span></button>
-        <button class="tab-btn" onclick="switchTab('done',this)">✅ المسلّمة <span class="tab-badge green" id="doneBadge">0</span></button>
-    </div>
-</header>
 
-<!-- TAB: CALCULATOR -->
-<div class="tab-panel active" id="tab-calc">
-<div class="container">
+        <div class="grid mb">
+          <!-- Printing -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-header-left">
+                <div class="card-icon ci-blue">🖨️</div>
+                <div>
+                  <h2>الطباعة — التراجات</h2>
+                  <p>كل 1000 ورقة ربع (أو كسرها) = تراج واحد</p>
+                </div>
+              </div>
+            </div>
+            <div class="section-title">عدد الألوان</div>
+            <div class="btn-group" id="printColorGroup">
+              <button class="btn-toggle" onclick="selectColors(1, this)">
+                1 لون — 100 ج / تراج
+              </button>
+              <button class="btn-toggle active" onclick="selectColors(4, this)">
+                4 ألوان — 400 ج / تراج
+              </button>
+            </div>
+            <div class="section-title">وش / وش وظهر</div>
+            <div class="btn-group" id="sidesGroup">
+              <button class="btn-toggle active" onclick="selectSides(1, this)">
+                وش فقط
+              </button>
+              <button class="btn-toggle" onclick="selectSides(2, this)">
+                وش وظهر (× 2)
+              </button>
+            </div>
+            <div class="raj-preview-box" id="rajPreview">
+              💡 أكتب عدد الأوراق الربع لتظهر تفاصيل التراجات
+            </div>
+          </div>
 
-  <div class="grid mb">
-    <!-- Paper -->
-    <div class="card highlighted">
-      <div class="card-header">
-        <div class="card-icon ci-blue">📄</div>
-        <div><h2>إعدادات الورق</h2><p>نوع الفرخ والجرام وسعر الطن</p></div>
-      </div>
-      <div class="section-title">نوع الفرخ</div>
-      <div class="btn-group" id="paperTypeGroup">
-        <button class="btn-toggle active" onclick="selectPaperType('70x100',this)">فرخ 70×100</button>
-        <button class="btn-toggle" onclick="selectPaperType('66x88',this)">فرخ 66×88</button>
-      </div>
-      <div id="paperInfo70" class="size-info">
-        <span class="size-badge">📐 الورقة الربع: 50×35 سم</span>
-        <span class="size-badge">✂️ 4 ورقات/فرخة</span>
-      </div>
-      <div id="paperInfo66" class="size-info" style="display:none">
-        <span class="size-badge">📐 الورقة الجاير: 44×33 سم</span>
-        <span class="size-badge">✂️ 4 ورقات/فرخة</span>
-      </div>
-      <div class="divider"></div>
-      <div class="section-title">جرام الورق</div>
-      <div class="btn-group" id="grammageGroup">
-        <button class="btn-toggle" onclick="selectGrammage(115,this)">115</button>
-        <button class="btn-toggle" onclick="selectGrammage(130,this)">130</button>
-        <button class="btn-toggle active" onclick="selectGrammage(150,this)">150</button>
-        <button class="btn-toggle" onclick="selectGrammage(200,this)">200</button>
-        <button class="btn-toggle" onclick="selectGrammage(250,this)">250</button>
-        <button class="btn-toggle" onclick="selectGrammage(300,this)">300</button>
-      </div>
-      <div class="divider"></div>
-      <label>سعر الطن (بالألف جنيه)</label>
-      <input type="number" id="tonPrice" placeholder="مثال: 58 (يعني 58000 ج)" min="0" step="any" oninput="autoCalc()">
-      <small style="color:var(--text-muted)">الرقم المكتوب يضرب في 1000 تلقائياً</small>
-    </div>
-
-    <!-- Design & Quantity -->
-    <div class="card">
-      <div class="card-header">
-        <div class="card-icon ci-gold">📏</div>
-        <div><h2>مقاس التصميم والكمية المطلوبة</h2><p>أبعاد الشغلانة وعدد الأوراق الربع</p></div>
-      </div>
-      <div class="field-row">
-        <div>
-          <label>طول التصميم (سم)</label>
-          <input type="number" id="designLength" placeholder="25" min="0" step="any" oninput="autoCalc()">
+          <!-- Zinkat -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-header-left">
+                <div class="card-icon ci-red">🔲</div>
+                <div>
+                  <h2>الزنكات (CTP)</h2>
+                  <p>تُحسب مرة واحدة للشغلانة</p>
+                </div>
+              </div>
+              <label class="sync-label" title="ربط الزنكات تلقائياً مع اختيارات الطباعة">
+                <input type="checkbox" id="syncZinkat" checked onchange="onSyncToggle()" />
+                ربط تلقائي بالطباعة
+              </label>
+            </div>
+            <div class="section-title">عدد الألوان</div>
+            <div class="btn-group" id="zinkatColorGroup">
+              <button class="btn-toggle" id="zColor1" onclick="selectZinkatColors(1, this)">
+                1 لون — 65 ج
+              </button>
+              <button class="btn-toggle active" id="zColor4" onclick="selectZinkatColors(4, this)">
+                4 ألوان — 250 ج
+              </button>
+            </div>
+            <div class="section-title">وش / وش وظهر</div>
+            <div class="btn-group" id="zinkatSidesGroup">
+              <button class="btn-toggle active" id="zSide1" onclick="selectZinkatSides(1, this)">
+                طقم واحد (وش)
+              </button>
+              <button class="btn-toggle" id="zSide2" onclick="selectZinkatSides(2, this)">
+                طقمين (وش وظهر × 2)
+              </button>
+            </div>
+            <div class="raj-preview-box" style="font-size: 0.74rem;">
+              <strong style="color: var(--press-blue)">أسعار الزنكات:</strong><br />
+              1 لون وش: <strong>65 ج</strong> &nbsp;|&nbsp; 1 لون وش وظهر: <strong>130 ج</strong><br />
+              4 ألوان وش: <strong>250 ج</strong> &nbsp;|&nbsp; 4 ألوان وش وظهر: <strong>500 ج</strong>
+            </div>
+          </div>
         </div>
-        <div>
-          <label>عرض التصميم (سم)</label>
-          <input type="number" id="designWidth" placeholder="17" min="0" step="any" oninput="autoCalc()">
+
+        <div class="grid mb">
+          <!-- Client & Phone -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-header-left">
+                <div class="card-icon ci-purple">👤</div>
+                <div>
+                  <h2>بيانات العميل والواتساب</h2>
+                  <p>اكتب رقم العميل للإرسال المباشر أو اتركه فارغاً لتختار من جهات اتصالك</p>
+                </div>
+              </div>
+            </div>
+            <div class="field-row">
+              <div>
+                <label>اسم العميل</label>
+                <input type="text" id="clientName" placeholder="مثال: أستاذ محمد" />
+              </div>
+              <div>
+                <label>رقم واتساب العميل (اختياري)</label>
+                <input type="tel" id="clientPhone" placeholder="01012345678" />
+              </div>
+            </div>
+            <label>وصف الشغلانة</label>
+            <input type="text" id="jobDesc" placeholder="مثال: فلايرات A5 مطعم النيل" />
+          </div>
+
+          <!-- Extra -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-header-left">
+                <div class="card-icon ci-green">➕</div>
+                <div>
+                  <h2>خدمات ما بعد الطباعة (إضافات)</h2>
+                  <p>سلوفان، تكسير، ريجة، قص، نقل...</p>
+                </div>
+              </div>
+            </div>
+            <label>مبلغ إضافي (جنيه)</label>
+            <input
+              type="number"
+              id="extraCost"
+              placeholder="مثال: 200"
+              min="0"
+              step="any"
+              oninput="autoCalc()"
+            />
+            <label>ملاحظة على الإضافة</label>
+            <input type="text" id="extraNote" placeholder="مثال: سلوفان مط + تكسير" />
+          </div>
         </div>
-      </div>
-      <div class="cut-preview" id="cutPreview" style="display:none">
-        <div class="cut-visual" id="cutVisual"></div>
-        <div class="cut-info">
-          <strong id="cutCountText">—</strong>
-          <span id="cutDetails">—</span>
-        </div>
-      </div>
-      <div class="divider"></div>
-      <label>عدد الأوراق الربع المطلوبة</label>
-      <input type="number" id="quarterSheetsInput" placeholder="1000" min="0" step="any" oninput="autoCalc()">
-      <small style="color:var(--text-muted)">أكتب هنا عدد ورق الربع اللي عايز تطبعه</small>
-    </div>
-  </div>
 
-  <div class="grid mb">
-    <!-- Printing -->
-    <div class="card">
-      <div class="card-header">
-        <div class="card-icon ci-blue">🖨️</div>
-        <div><h2>الطباعة — التراجات</h2><p>كل 1000 ورقة ربع = تراج واحد</p></div>
-      </div>
-      <div class="section-title">عدد الألوان</div>
-      <div class="btn-group" id="printColorGroup">
-        <button class="btn-toggle" onclick="selectColors(1,this)">1 لون — 100 ج/تراج</button>
-        <button class="btn-toggle active" onclick="selectColors(4,this)">4 ألوان — 350 ج/تراج</button>
-      </div>
-      <div class="section-title">وش / وش وظهر</div>
-      <div class="btn-group" id="sidesGroup">
-        <button class="btn-toggle active" onclick="selectSides(1,this)">وش فقط</button>
-        <button class="btn-toggle" onclick="selectSides(2,this)">وش وظهر (× 2)</button>
-      </div>
-      <div class="raj-preview-box" id="rajPreview">
-        💡 أكتب عدد الأوراق الربع لتظهر تفاصيل التراجات
-      </div>
-    </div>
+        <!-- Results & Actions -->
+        <div class="card full mb">
+          <div class="card-header">
+            <div class="card-header-left">
+              <div class="card-icon ci-gold">🧮</div>
+              <div>
+                <h2>نتيجة الحساب النهائية</h2>
+                <p>تفصيل التكلفة الفعلية + إضافة نسبة الربح قبل الإرسال للعميل</p>
+              </div>
+            </div>
+          </div>
+          <div class="results-area" id="resultsArea">
+            <div class="results-placeholder">
+              <span class="icon">🖨️</span>
+              أدخل سعر الطن وعدد الورق ليظهر الحساب فوراً
+            </div>
+          </div>
 
-    <!-- Zinkat -->
-    <div class="card">
-      <div class="card-header">
-        <div class="card-icon ci-red">🔲</div>
-        <div><h2>الزنكات</h2><p>تُدفع مرة واحدة بغض النظر عن الكمية</p></div>
-      </div>
-      <div class="section-title">عدد الألوان</div>
-      <div class="btn-group" id="zinkatColorGroup">
-        <button class="btn-toggle" onclick="selectZinkatColors(1,this)">1 لون — 65 ج</button>
-        <button class="btn-toggle active" onclick="selectZinkatColors(4,this)">4 ألوان — 240 ج</button>
-      </div>
-      <div class="section-title">وش / وش وظهر</div>
-      <div class="btn-group" id="zinkatSidesGroup">
-        <button class="btn-toggle active" onclick="selectZinkatSides(1,this)">وش فقط</button>
-        <button class="btn-toggle" onclick="selectZinkatSides(2,this)">وش وظهر (× 2)</button>
-      </div>
-      <div class="raj-preview-box" style="font-size:.73rem; color:var(--text-muted)">
-        <strong style="color:var(--press-blue)">جدول الزنكات:</strong><br>
-        1 لون وش: 65 ج &nbsp;|&nbsp; 1 لون وش+ظهر: 130 ج<br>
-        4 ألوان وش: 240 ج &nbsp;|&nbsp; 4 ألوان وش+ظهر: 480 ج
-      </div>
-    </div>
-  </div>
+          <!-- Profit & WhatsApp Share Box -->
+          <div class="share-box">
+            <div class="share-box-title">
+              <span>💰 إضافة نسبة الربح ومشاركة التسعيرة عبر واتساب:</span>
+              <small style="color: var(--text-muted); font-weight: 600;">
+                (النسبة تُضاف على السعر المرسل للعميل دون أن تظهر له كربح)
+              </small>
+            </div>
 
-  <div class="grid mb">
-    <!-- Client -->
-    <div class="card">
-      <div class="card-header">
-        <div class="card-icon ci-purple">👤</div>
-        <div><h2>بيانات العميل</h2><p>اختياري — لتنظيم الطلبات</p></div>
-      </div>
-      <label>اسم العميل</label>
-      <input type="text" id="clientName" placeholder="مثال: محمد أحمد">
-      <label>وصف الشغلانة</label>
-      <input type="text" id="jobDesc" placeholder="مثال: منيو مطعم النيل">
-    </div>
-    <!-- Extra -->
-    <div class="card">
-      <div class="card-header">
-        <div class="card-icon ci-green">➕</div>
-        <div><h2>إضافات اختيارية</h2><p>تكاليف إضافية</p></div>
-      </div>
-      <label>مبلغ إضافي (جنيه)</label>
-      <input type="number" id="extraCost" placeholder="مثال: 200" min="0" step="any" oninput="autoCalc()">
-      <label>ملاحظة على الإضافة</label>
-      <input type="text" id="extraNote" placeholder="مثال: تغليف / توصيل">
-    </div>
-  </div>
+            <div class="profit-row">
+              <div>
+                <div class="section-title">
+                  <span>حدد نسبة الربح أو المصنعية قبل الإرسال:</span>
+                </div>
+                <div class="preset-chips" style="margin-bottom: 8px;">
+                  <button type="button" class="preset-chip" onclick="setQuickProfit(0, 'percent')">بدون (0%)</button>
+                  <button type="button" class="preset-chip" onclick="setQuickProfit(10, 'percent')">+10%</button>
+                  <button type="button" class="preset-chip" onclick="setQuickProfit(15, 'percent')">+15%</button>
+                  <button type="button" class="preset-chip" onclick="setQuickProfit(20, 'percent')">+20%</button>
+                  <button type="button" class="preset-chip" onclick="setQuickProfit(25, 'percent')">+25%</button>
+                  <button type="button" class="preset-chip" onclick="setQuickProfit(30, 'percent')">+30%</button>
+                </div>
+                <div class="profit-input-wrap">
+                  <input
+                    type="number"
+                    id="profitValue"
+                    placeholder="اكتب النسبة أو المبلغ (مثال: 20)"
+                    min="0"
+                    step="any"
+                    oninput="autoCalc()"
+                  />
+                  <button
+                    type="button"
+                    id="modePercentBtn"
+                    class="profit-mode-btn active"
+                    onclick="setProfitMode('percent')"
+                  >
+                    نسبة %
+                  </button>
+                  <button
+                    type="button"
+                    id="modeFixedBtn"
+                    class="profit-mode-btn"
+                    onclick="setProfitMode('fixed')"
+                  >
+                    مبلغ ثابت (ج)
+                  </button>
+                </div>
+              </div>
 
-  <!-- Results -->
-  <div class="card full mb">
-    <div class="card-header">
-      <div class="card-icon ci-gold">🧮</div>
-      <div><h2>نتيجة الحساب</h2><p>تفصيل كامل للتكلفة</p></div>
-    </div>
-    <div class="results-area" id="resultsArea">
-      <div class="results-placeholder">
-        <span class="icon">🖨️</span>
-        ادخل البيانات وسيظهر الحساب تلقائياً
-      </div>
-    </div>
-    <div style="display:flex;gap:10px;margin-top:13px;flex-wrap:wrap">
-      <button class="calc-btn" onclick="saveOrder()" style="flex:2;min-width:130px;background:linear-gradient(135deg,var(--success),#0f4a27)">💾 حفظ كطلب</button>
-      <button class="clear-btn" onclick="clearAll()" style="flex:1;min-width:80px;margin-top:7px">🗑️ مسح</button>
-    </div>
-  </div>
+              <div class="client-final-preview" id="clientFinalPreview">
+                <div class="lbl">السعر النهائي للعميل (شامل الربح)</div>
+                <div class="final-num" id="finalClientPriceDisplay">0.00 ج</div>
+                <div class="profit-sub" id="profitBreakdownDisplay">التكلفة: 0 ج | مكسبك: 0 ج</div>
+              </div>
+            </div>
 
-</div>
-</div>
+            <div class="share-buttons-row">
+              <button
+                class="calc-btn wa-btn-summary"
+                onclick="shareCurrentWhatsApp('summary')"
+                style="flex: 1; min-width: 220px;"
+              >
+                🟢 مشاركة الإجمالي للعميل (شامل النسبة)
+              </button>
+              <button
+                class="calc-btn wa-btn-detail"
+                onclick="shareCurrentWhatsApp('detailed')"
+                style="flex: 1; min-width: 220px;"
+              >
+                📋 مشاركة بالتفصيل (ورق + طباعة + زنكات)
+              </button>
+            </div>
+          </div>
 
-<!-- TAB: ORDERS -->
-<div class="tab-panel" id="tab-orders">
-<div class="container">
-  <div class="card full">
-    <div class="section-header">
-      <h3>📋 الطلبات الجارية</h3>
-      <small id="pendingCount">—</small>
-    </div>
-    <div id="pendingList"></div>
-  </div>
-</div>
-</div>
-
-<!-- TAB: DONE -->
-<div class="tab-panel" id="tab-done">
-<div class="container">
-  <div class="card full">
-    <div class="section-header">
-      <h3>✅ الطلبات المسلّمة</h3>
-      <div style="display:flex;gap:8px;align-items:center">
-        <small id="doneCount">—</small>
-        <button class="clear-btn" onclick="clearDone()" style="width:auto;margin:0;padding:5px 12px;font-size:.74rem">🗑️ مسح الكل</button>
-      </div>
-    </div>
-    <div id="doneList"></div>
-  </div>
-</div>
-</div>
-
-<div class="toast" id="toast"></div>
-
-<script>
-// ============= CONSTANTS =============
-const PAPER_SPECS = {
-  '70x100': { sheetW:70, sheetH:100, cutW:50, cutH:35, areaM2:0.7, name:'فرخ 70×100', cutName:'ورقة ربع' },
-  '66x88' : { sheetW:66, sheetH:88,  cutW:44, cutH:33, areaM2:0.5808, name:'فرخ 66×88', cutName:'ورقة جاير' }
-};
-const PRINT_PRICES = { 1:100, 4:350 };
-const ZINKAT_PRICES = { 1:70, 4:240 };
-
-// ============= STATE =============
-let state = {
-  paperType: '70x100',
-  grammage: 150,
-  tonPriceInput: null,        // القيمة اللي يكتبها المستخدم (بالألف)
-  tonPrice: 0,               // القيمة الفعلية = tonPriceInput * 1000
-  designLength: 0,
-  designWidth: 0,
-  quarterSheets: 0,          // عدد الأوراق الربع المطلوبة (يدوي)
-  printColors: 4,
-  sides: 1,
-  zinkatColors: 4,
-  zinkatSides: 1,
-  extraCost: 0
-};
-
-// ============= HELPERS =============
-function parseFloatVal(id) {
-  let val = document.getElementById(id).value.trim();
-  return val === '' ? null : parseFloat(val);
-}
-
-function readInputs() {
-  // سعر الطن بالألف، نضربه في 1000 عشان نستخدمه
-  let tonRaw = parseFloatVal('tonPrice');
-  state.tonPriceInput = tonRaw;
-  state.tonPrice = tonRaw !== null && !isNaN(tonRaw) ? tonRaw * 1000 : 0;
-
-  state.designLength = parseFloatVal('designLength') || 0;
-  state.designWidth = parseFloatVal('designWidth') || 0;
-  state.quarterSheets = parseFloatVal('quarterSheetsInput') || 0;
-  state.extraCost = parseFloatVal('extraCost') || 0;
-}
-
-function calcSheetPrice() {
-  let spec = PAPER_SPECS[state.paperType];
-  if (!state.tonPrice || !state.grammage) return 0;
-  return (state.tonPrice * state.grammage * spec.areaM2) / 1_000_000;
-}
-
-function piecesPerQuarter() {
-  let spec = PAPER_SPECS[state.paperType];
-  let usableW = spec.cutW;
-  let usableH = spec.cutH - 1; // سم البنسة
-  let dL = state.designLength, dW = state.designWidth;
-  if (!dL || !dW) return { total: 0, rows: 0, cols: 0 };
-  let fit1 = Math.floor(usableH / dL) * Math.floor(usableW / dW);
-  let fit2 = Math.floor(usableH / dW) * Math.floor(usableW / dL);
-  let best = fit1 >= fit2
-    ? { total: fit1, rows: Math.floor(usableH / dL), cols: Math.floor(usableW / dW) }
-    : { total: fit2, rows: Math.floor(usableH / dW), cols: Math.floor(usableW / dL) };
-  return best;
-}
-
-function computeCosts() {
-  let qSheets = state.quarterSheets || 0;
-  if (!qSheets || !state.tonPrice) return null;
-
-  let sheetPrice = calcSheetPrice();
-  let sheetsNeeded = Math.ceil(qSheets / 4);
-  let paperCost = sheetsNeeded * sheetPrice;
-
-  let rajs = Math.ceil(qSheets / 1000);
-  let printCost = rajs * state.sides * PRINT_PRICES[state.printColors];
-
-  let zinkatCost = ZINKAT_PRICES[state.zinkatColors] * state.zinkatSides;
-
-  let total = paperCost + printCost + zinkatCost + (state.extraCost || 0);
-
-  return {
-    sheetPrice,
-    quarterSheets: qSheets,
-    sheetsNeeded,
-    paperCost,
-    rajs,
-    printCost,
-    zinkatCost,
-    total,
-    spec: PAPER_SPECS[state.paperType]
-  };
-}
-
-// ============= UI UPDATES =============
-function updateCutPreview() {
-  let fit = piecesPerQuarter();
-  let preview = document.getElementById('cutPreview');
-  if (fit.total > 0) {
-    preview.style.display = 'flex';
-    document.getElementById('cutCountText').textContent = fit.total + ' قطعة في الورقة (' + fit.rows + ' × ' + fit.cols + ')';
-    let spec = PAPER_SPECS[state.paperType];
-    document.getElementById('cutDetails').textContent = spec.cutName + ': ' + spec.cutW + '×' + (spec.cutH - 1) + ' سم (بعد البنسة)';
-    let visual = document.getElementById('cutVisual');
-    let maxR = Math.min(fit.rows, 4), maxC = Math.min(fit.cols, 4);
-    visual.style.gridTemplateColumns = 'repeat(' + maxC + ',1fr)';
-    visual.style.gridTemplateRows = 'repeat(' + maxR + ',1fr)';
-    visual.innerHTML = '';
-    for (let i = 0; i < maxR * maxC; i++) {
-      let cell = document.createElement('div'); cell.className = 'cell'; visual.appendChild(cell);
-    }
-  } else {
-    preview.style.display = 'none';
-  }
-}
-
-function updateRajPreview() {
-  let el = document.getElementById('rajPreview');
-  let qty = state.quarterSheets || 0;
-  if (qty <= 0) {
-    el.innerHTML = '💡 أكتب عدد الأوراق الربع لتظهر تفاصيل التراجات';
-    return;
-  }
-  let rajs = Math.ceil(qty / 1000);
-  let pricePerRaj = PRINT_PRICES[state.printColors];
-  let sideTxt = state.sides === 2 ? 'وش وظهر' : 'وش فقط';
-  el.innerHTML = '<strong style="color:var(--press-blue)">' + rajs + ' تراج' + (rajs > 1 ? 'ات' : '') + '</strong> × ' + state.sides + ' وجه (' + sideTxt + ') × ' + pricePerRaj + ' ج = <strong style="color:var(--success)">' + (rajs * state.sides * pricePerRaj).toFixed(2) + ' ج</strong>';
-}
-
-function renderResults(r) {
-  if (!r) {
-    document.getElementById('resultsArea').innerHTML = '<div class="results-placeholder"><span class="icon">🖨️</span>ادخل البيانات وسيظهر الحساب تلقائياً</div>';
-    return;
-  }
-  let spec = r.spec;
-  let pieces = piecesPerQuarter();
-  let designInfo = (pieces.total > 0)
-    ? '<div class="result-item"><label>قطع التصميم في الورقة</label><div class="val">' + pieces.total + ' قطعة</div><div class="unit">('+pieces.rows+'×'+pieces.cols+') تحتاج ' + r.quarterSheets + ' ورقة ربع</div></div>'
-    : '';
-  let extraRow = state.extraCost > 0
-    ? '<div class="result-item"><label>إضافات</label><div class="val">' + state.extraCost.toFixed(2) + '</div><div class="unit">جنيه</div></div>'
-    : '';
-  let zinkatDesc = (state.zinkatColors === 4 ? '4 ألوان' : '1 لون') + ' ' + (state.zinkatSides === 2 ? 'وش وظهر' : 'وش فقط');
-  let rajInfo = r.rajs + ' تراج × ' + state.sides + ' وجه × ' + PRINT_PRICES[state.printColors] + ' ج';
-
-  document.getElementById('resultsArea').innerHTML = `
-    <div class="result-grid">
-      <div class="result-item"><label>سعر الفرخ (${spec.name})</label><div class="val">${r.sheetPrice.toFixed(2)}</div><div class="unit">جنيه — ${state.grammage} جرام</div></div>
-      ${designInfo}
-      <div class="result-item"><label>عدد الأوراق الربع</label><div class="val">${r.quarterSheets}</div><div class="unit">${r.sheetsNeeded} فرخة كاملة</div></div>
-      <div class="result-item"><label>تكلفة الورق</label><div class="val gold">${r.paperCost.toFixed(2)}</div><div class="unit">جنيه</div></div>
-      <div class="result-item"><label>تكلفة الطباعة</label><div class="val">${r.printCost.toFixed(2)}</div><div class="unit">${rajInfo}</div></div>
-      <div class="result-item"><label>تكلفة الزنكات</label><div class="val">${r.zinkatCost.toFixed(2)}</div><div class="unit">${zinkatDesc}</div></div>
-      ${extraRow}
-    </div>
-    <div class="raj-breakdown"><strong>تفاصيل التراجات:</strong> ${r.quarterSheets} ورقة ربع → ${r.rajs} تراج (كل 1000 = تراج) × ${state.sides} وجه = ${r.printCost.toFixed(2)} ج</div>
-    <div class="total-bar"><div class="tlabel">💰 إجمالي التكلفة</div><div class="amount">${r.total.toFixed(2)} جنيه</div></div>`;
-}
-
-function autoCalc() {
-  readInputs();
-  updateCutPreview();
-  updateRajPreview();
-  let result = computeCosts();
-  if (result) {
-    renderResults(result);
-    window._lastResult = result;
-  } else {
-    renderResults(null);
-  }
-}
-
-// ============= UI TOGGLES =============
-function toggleGroup(groupId, btn) {
-  document.querySelectorAll('#' + groupId + ' .btn-toggle').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-}
-function selectPaperType(type, btn) {
-  state.paperType = type;
-  toggleGroup('paperTypeGroup', btn);
-  document.getElementById('paperInfo70').style.display = type === '70x100' ? 'flex' : 'none';
-  document.getElementById('paperInfo66').style.display = type === '66x88' ? 'flex' : 'none';
-  autoCalc();
-}
-function selectGrammage(g, btn) { state.grammage = g; toggleGroup('grammageGroup', btn); autoCalc(); }
-function selectColors(c, btn) { state.printColors = c; toggleGroup('printColorGroup', btn); autoCalc(); }
-function selectSides(s, btn) { state.sides = s; toggleGroup('sidesGroup', btn); autoCalc(); }
-function selectZinkatColors(c, btn) { state.zinkatColors = c; toggleGroup('zinkatColorGroup', btn); autoCalc(); }
-function selectZinkatSides(s, btn) { state.zinkatSides = s; toggleGroup('zinkatSidesGroup', btn); autoCalc(); }
-
-// ============= TABS =============
-function switchTab(name, btn) {
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-' + name).classList.add('active');
-  if (btn) btn.classList.add('active');
-  if (name === 'orders') renderPending();
-  if (name === 'done') renderDone();
-}
-
-// ============= ORDERS (LOCAL STORAGE) =============
-function getOrders() { return JSON.parse(localStorage.getItem('print_orders') || '[]'); }
-function saveOrders(arr) { localStorage.setItem('print_orders', JSON.stringify(arr)); }
-
-function updateBadges() {
-  let orders = getOrders();
-  document.getElementById('pendingBadge').textContent = orders.filter(o => o.status === 'pending').length;
-  document.getElementById('doneBadge').textContent = orders.filter(o => o.status === 'done').length;
-}
-
-function saveOrder() {
-  if (!window._lastResult) { alert('أدخل البيانات كاملة أولاً!'); return; }
-  let r = window._lastResult;
-  let order = {
-    id: Date.now(),
-    client: document.getElementById('clientName').value.trim(),
-    desc: document.getElementById('jobDesc').value.trim(),
-    extraNote: document.getElementById('extraNote').value.trim(),
-    status: 'pending',
-    date: new Date().toLocaleDateString('ar-EG'),
-    time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' }),
-    paperType: state.paperType,
-    grammage: state.grammage,
-    tonPrice: state.tonPrice,
-    designLength: state.designLength,
-    designWidth: state.designWidth,
-    quarterSheets: state.quarterSheets,
-    ...r
-  };
-  let orders = getOrders();
-  orders.unshift(order);
-  saveOrders(orders);
-  updateBadges();
-  renderPending();
-  alert('✅ تم حفظ الطلب بنجاح');
-}
-
-function renderPending() {
-  let orders = getOrders().filter(o => o.status === 'pending');
-  document.getElementById('pendingCount').textContent = orders.length + ' طلب جاري';
-  let list = document.getElementById('pendingList');
-  if (!orders.length) {
-    list.innerHTML = '<div class="empty-state"><span class="icon">📭</span>لا توجد طلبات جارية</div>';
-    return;
-  }
-  list.innerHTML = orders.map(o => orderCard(o, 'pending')).join('');
-}
-
-function renderDone() {
-  let orders = getOrders().filter(o => o.status === 'done');
-  document.getElementById('doneCount').textContent = orders.length + ' طلب مسلّم';
-  let list = document.getElementById('doneList');
-  if (!orders.length) {
-    list.innerHTML = '<div class="empty-state"><span class="icon">✅</span>لا توجد طلبات مسلّمة</div>';
-    return;
-  }
-  list.innerHTML = orders.map(o => orderCard(o, 'done')).join('');
-}
-
-function orderCard(o, status) {
-  let spec = PAPER_SPECS[o.paperType] || {};
-  let isDone = status === 'done';
-  let clientDisplay = o.client || '<span class="no-name">بدون اسم</span>';
-  let doneBadge = isDone ? '<span class="done-badge">✅ مسلّمة</span>' : '';
-  let zinkatDesc = (o.zinkatColors === 4 ? '4 ألوان' : '1 لون') + ' ' + (o.zinkatSides === 2 ? 'وش وظهر' : 'وش فقط');
-  return `
-    <div class="order-card ${isDone ? 'done-card' : ''}">
-      <div style="flex:1;min-width:0">
-        <div class="order-client">${clientDisplay} ${doneBadge}</div>
-        ${o.desc ? '<div class="order-detail">📌 ' + o.desc + '</div>' : ''}
-        <div class="order-meta">
-          <span class="info-pill">${spec.name || o.paperType}</span>
-          <span class="info-pill">${o.grammage} جم</span>
-          <span class="info-pill">${o.quarterSheets} ورقة ربع</span>
-          <span class="info-pill">${o.printColors === 4 ? '4 لون' : '1 لون'}</span>
-          <span class="info-pill">${o.sides === 2 ? 'وش وظهر' : 'وش'}</span>
-          ${o.designLength ? '<span class="info-pill">📐 ' + o.designLength + '×' + o.designWidth + '</span>' : ''}
-        </div>
-        <div class="order-detail">
-          ورق: ${o.paperCost.toFixed(2)} ج | طباعة: ${o.printCost.toFixed(2)} ج | زنكات: ${o.zinkatCost.toFixed(2)} ج (${zinkatDesc})
-          ${o.extraCost ? '| إضافي: ' + o.extraCost.toFixed(2) + ' ج' : ''}
-        </div>
-        <div class="order-time">🕐 ${o.date} - ${o.time}</div>
-      </div>
-      <div class="order-actions">
-        <div class="order-price ${isDone ? 'done-price' : ''}">${o.total.toFixed(2)} ج</div>
-        <div class="action-row">
-          ${!isDone
-            ? '<button class="act-btn done-btn" onclick="markDone(' + o.id + ')">✅ سلّمت</button>'
-            : '<button class="act-btn restore-act" onclick="restore(' + o.id + ')">↩️ رجّع</button>'}
-          <button class="act-btn del-act" onclick="deleteOrder(' + o.id + ')">🗑️</button>
+          <div style="display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap">
+            <button
+              class="calc-btn"
+              onclick="saveOrder()"
+              style="flex: 3; min-width: 160px; background: linear-gradient(135deg, var(--success), #0f4a27);"
+            >
+              💾 حفظ في قائمة الطلبات
+            </button>
+            <button
+              class="clear-btn"
+              onclick="clearAll()"
+              style="flex: 1; min-width: 100px;"
+            >
+              🗑️ تصفير الحاسبة
+            </button>
+          </div>
         </div>
       </div>
-    </div>`;
-}
+    </div>
 
-window.markDone = function(id) {
-  let orders = getOrders().map(o => o.id === id ? { ...o, status: 'done' } : o);
-  saveOrders(orders); updateBadges(); renderPending(); renderDone();
-};
-window.restore = function(id) {
-  let orders = getOrders().map(o => o.id === id ? { ...o, status: 'pending' } : o);
-  saveOrders(orders); updateBadges(); renderPending(); renderDone();
-};
-window.deleteOrder = function(id) {
-  if (!confirm('متأكد من حذف الطلب؟')) return;
-  let orders = getOrders().filter(o => o.id !== id);
-  saveOrders(orders); updateBadges(); renderPending(); renderDone();
-};
-function clearDone() {
-  if (!confirm('مسح كل الطلبات المسلّمة؟')) return;
-  let orders = getOrders().filter(o => o.status !== 'done');
-  saveOrders(orders); updateBadges(); renderDone();
-}
-function clearAll() {
-  document.getElementById('tonPrice').value = '';
-  document.getElementById('designLength').value = '';
-  document.getElementById('designWidth').value = '';
-  document.getElementById('quarterSheetsInput').value = '';
-  document.getElementById('extraCost').value = '';
-  document.getElementById('extraNote').value = '';
-  document.getElementById('clientName').value = '';
-  document.getElementById('jobDesc').value = '';
-  state.tonPriceInput = null;
-  state.tonPrice = 0;
-  state.designLength = 0; state.designWidth = 0;
-  state.quarterSheets = 0; state.extraCost = 0;
-  renderResults(null);
-  document.getElementById('cutPreview').style.display = 'none';
-  document.getElementById('rajPreview').innerHTML = '💡 أكتب عدد الأوراق الربع لتظهر تفاصيل التراجات';
-  window._lastResult = null;
-}
+    <!-- TAB: ORDERS -->
+    <div class="tab-panel" id="tab-orders">
+      <div class="container">
+        <div class="card full">
+          <div class="section-header">
+            <h3>📋 الطلبات الجارية بالمطبعة</h3>
+            <small id="pendingCount">—</small>
+          </div>
+          <div id="pendingList"></div>
+        </div>
+      </div>
+    </div>
 
-// initial
-autoCalc();
-updateBadges();
-</script>
-</body>
+    <!-- TAB: DONE -->
+    <div class="tab-panel" id="tab-done">
+      <div class="container">
+        <div class="card full">
+          <div class="section-header">
+            <h3>✅ الطلبات المسلّمة للعملاء</h3>
+            <div style="display: flex; gap: 8px; align-items: center">
+              <small id="doneCount">—</small>
+              <button
+                class="clear-btn"
+                onclick="clearDone()"
+                style="width: auto; padding: 5px 12px; font-size: 0.74rem;"
+              >
+                🗑️ مسح الأرشيف
+              </button>
+            </div>
+          </div>
+          <div id="doneList"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+      // ============= CONSTANTS =============
+      const PAPER_SPECS = {
+        "70x100": {
+          sheetW: 70,
+          sheetH: 100,
+          cutW: 50,
+          cutH: 35,
+          areaM2: 0.7,
+          name: "فرخ 70×100",
+          cutName: "ورقة ربع (35×50)",
+        },
+        "66x88": {
+          sheetW: 66,
+          sheetH: 88,
+          cutW: 44,
+          cutH: 33,
+          areaM2: 0.5808,
+          name: "فرخ 66×88",
+          cutName: "ورقة جاير (33×44)",
+        },
+      };
+
+      const PRINT_PRICES = { 1: 100, 4: 400 };
+      const ZINKAT_PRICES = { 1: 65, 4: 250 };
+
+      // ============= STATE =============
+      let state = {
+        paperType: "70x100",
+        grammage: 150,
+        tonPriceInput: null,
+        tonPrice: 0,
+        designLength: 0,
+        designWidth: 0,
+        quarterSheets: 0,
+        printColors: 4,
+        sides: 1,
+        zinkatColors: 4,
+        zinkatSides: 1,
+        extraCost: 0,
+        profitMode: "percent", // 'percent' or 'fixed'
+        profitVal: 0,
+      };
+
+      // ============= HELPERS & TOAST =============
+      function showToast(msg) {
+        const t = document.getElementById("toast");
+        t.textContent = msg;
+        t.classList.add("show");
+        setTimeout(() => t.classList.remove("show"), 2600);
+      }
+
+      function parseFloatVal(id) {
+        let el = document.getElementById(id);
+        if (!el) return null;
+        let val = el.value.trim();
+        return val === "" ? null : parseFloat(val);
+      }
+
+      function onTonPriceInput() {
+        let val = document.getElementById("tonPrice").value.trim();
+        if (val !== "") {
+          localStorage.setItem("saved_ton_price", val);
+        }
+        autoCalc();
+      }
+
+      function setProfitMode(mode) {
+        state.profitMode = mode;
+        document.getElementById("modePercentBtn").classList.toggle("active", mode === "percent");
+        document.getElementById("modeFixedBtn").classList.toggle("active", mode === "fixed");
+        autoCalc();
+      }
+
+      function setQuickProfit(val, mode) {
+        state.profitMode = mode;
+        document.getElementById("modePercentBtn").classList.toggle("active", mode === "percent");
+        document.getElementById("modeFixedBtn").classList.toggle("active", mode === "fixed");
+        document.getElementById("profitValue").value = val > 0 ? val : "";
+        autoCalc();
+      }
+
+      function setPresetSize(l, w) {
+        document.getElementById("designLength").value = l;
+        document.getElementById("designWidth").value = w;
+        onDesignSizeChange();
+      }
+
+      function onDesignSizeChange() {
+        readInputs();
+        updateCutPreview();
+        let fit = piecesPerQuarter();
+        let targetP = parseFloatVal("targetPiecesInput");
+        if (fit.total > 0 && targetP > 0) {
+          let qNeeded = Math.ceil(targetP / fit.total);
+          document.getElementById("quarterSheetsInput").value = qNeeded;
+        }
+        autoCalc();
+      }
+
+      function onQuarterInput() {
+        readInputs();
+        let fit = piecesPerQuarter();
+        if (fit.total > 0 && state.quarterSheets > 0) {
+          document.getElementById("targetPiecesInput").value = state.quarterSheets * fit.total;
+        } else if (!state.quarterSheets) {
+          document.getElementById("targetPiecesInput").value = "";
+        }
+        autoCalc();
+      }
+
+      function onPiecesInput() {
+        let targetP = parseFloatVal("targetPiecesInput");
+        readInputs();
+        let fit = piecesPerQuarter();
+        if (fit.total > 0 && targetP > 0) {
+          let qNeeded = Math.ceil(targetP / fit.total);
+          document.getElementById("quarterSheetsInput").value = qNeeded;
+          autoCalc();
+        } else if (!targetP) {
+          document.getElementById("quarterSheetsInput").value = "";
+          autoCalc();
+        } else {
+          showToast("⚠️ أدخل طول وعرض التصميم أولاً لحساب عدد الورق من القطع");
+        }
+      }
+
+      function readInputs() {
+        let tonRaw = parseFloatVal("tonPrice");
+        state.tonPriceInput = tonRaw;
+        state.tonPrice = tonRaw !== null && !isNaN(tonRaw) ? tonRaw * 1000 : 0;
+
+        state.designLength = parseFloatVal("designLength") || 0;
+        state.designWidth = parseFloatVal("designWidth") || 0;
+        state.quarterSheets = parseFloatVal("quarterSheetsInput") || 0;
+        state.extraCost = parseFloatVal("extraCost") || 0;
+        state.profitVal = parseFloatVal("profitValue") || 0;
+      }
+
+      function calcSheetPrice() {
+        let spec = PAPER_SPECS[state.paperType];
+        if (!state.tonPrice || !state.grammage) return 0;
+        return (state.tonPrice * state.grammage * spec.areaM2) / 1_000_000;
+      }
+
+      function piecesPerQuarter() {
+        let spec = PAPER_SPECS[state.paperType];
+        let usableW = spec.cutW;
+        let usableH = spec.cutH - 1;
+        let dL = state.designLength,
+          dW = state.designWidth;
+        if (!dL || !dW || dL <= 0 || dW <= 0) return { total: 0, rows: 0, cols: 0 };
+        let fit1 = Math.floor(usableH / dL) * Math.floor(usableW / dW);
+        let fit2 = Math.floor(usableH / dW) * Math.floor(usableW / dL);
+        return fit1 >= fit2
+          ? { total: fit1, rows: Math.floor(usableH / dL), cols: Math.floor(usableW / dW) }
+          : { total: fit2, rows: Math.floor(usableH / dW), cols: Math.floor(usableW / dL) };
+      }
+
+      function computeCosts() {
+        let qSheets = state.quarterSheets || 0;
+        if (qSheets <= 0 || state.tonPrice <= 0) return null;
+
+        let sheetPrice = calcSheetPrice();
+        let sheetsNeeded = Math.ceil(qSheets / 4);
+        let paperCost = sheetsNeeded * sheetPrice;
+
+        let rajs = Math.ceil(qSheets / 1000);
+        let printCost = rajs * state.sides * PRINT_PRICES[state.printColors];
+
+        let zinkatCost = ZINKAT_PRICES[state.zinkatColors] * state.zinkatSides;
+
+        let total = paperCost + printCost + zinkatCost + (state.extraCost || 0);
+
+        // حساب الربح والسعر النهائي للعميل
+        let profitAmount = 0;
+        if (state.profitVal > 0) {
+          if (state.profitMode === "percent") {
+            profitAmount = total * (state.profitVal / 100);
+          } else {
+            profitAmount = state.profitVal;
+          }
+        }
+        let finalClientTotal = total + profitAmount;
+
+        let fit = piecesPerQuarter();
+        let totalPieces = fit.total > 0 ? qSheets * fit.total : 0;
+        let unitCost = totalPieces > 0 ? total / totalPieces : 0;
+        let clientUnitCost = totalPieces > 0 ? finalClientTotal / totalPieces : 0;
+
+        return {
+          sheetPrice,
+          quarterSheets: qSheets,
+          sheetsNeeded,
+          paperCost,
+          rajs,
+          printCost,
+          zinkatCost,
+          total,
+          profitMode: state.profitMode,
+          profitVal: state.profitVal,
+          profitAmount,
+          finalClientTotal,
+          totalPieces,
+          unitCost,
+          clientUnitCost,
+          spec: PAPER_SPECS[state.paperType],
+        };
+      }
+
+      // ============= WHATSAPP SHARING LOGIC =============
+      function formatEgyptPhone(rawPhone) {
+        if (!rawPhone) return "";
+        let digits = rawPhone.replace(/\D/g, "");
+        if (!digits) return "";
+        if (digits.startsWith("00")) {
+          digits = digits.substring(2);
+        } else if (digits.startsWith("01") && digits.length === 11) {
+          digits = "2" + digits;
+        }
+        return digits;
+      }
+
+      function buildWhatsAppMessage(data, mode) {
+        let spec = PAPER_SPECS[data.paperType] || {};
+        let colorTxt = data.printColors === 4 ? "4 ألوان" : "1 لون";
+        let sideTxt = data.sides === 2 ? "وش وظهر" : "وش فقط";
+        let zColorTxt = data.zinkatColors === 4 ? "4 ألوان" : "1 لون";
+        let zSideTxt = data.zinkatSides === 2 ? "وش وظهر" : "وش فقط";
+
+        // السعر النهائي للعميل (لو محفوظ أو محسوب)
+        let clientPrice = data.finalClientTotal !== undefined ? data.finalClientTotal : data.total;
+        let profitAmt = data.profitAmount || 0;
+
+        let lines = [];
+
+        if (mode === "summary") {
+          lines.push("🖨️ *عرض سعر طباعة*");
+          lines.push("━━━━━━━━━━━━━━");
+          if (data.client) lines.push(`👤 *العميل:* ${data.client}`);
+          if (data.desc) lines.push(`📌 *الشغلانة:* ${data.desc}`);
+          lines.push(`📄 *الخامة:* ورق ${data.grammage} جرام`);
+          if (data.designLength && data.designWidth) {
+            lines.push(`📐 *المقاس:* ${data.designLength}×${data.designWidth} سم`);
+          }
+          lines.push(`🎨 *الطباعة:* ${colorTxt} (${sideTxt})`);
+          if (data.totalPieces > 0) {
+            lines.push(`📦 *الكمية الصافية:* ${data.totalPieces.toLocaleString()} قطعة`);
+          } else {
+            lines.push(`📦 *الكمية:* ${data.quarterSheets} ورقة ربع`);
+          }
+          if (data.extraNote) {
+            lines.push(`✨ *تشطيبات إضافية:* ${data.extraNote}`);
+          }
+          lines.push("━━━━━━━━━━━━━━");
+          lines.push(`💰 *الإجمالي النهائي:* *${clientPrice.toFixed(2)} جنيه*`);
+        } else {
+          lines.push("🖨️ *تفاصيل مقايسة الطباعة*");
+          lines.push("━━━━━━━━━━━━━━");
+          if (data.client) lines.push(`👤 *العميل:* ${data.client}`);
+          if (data.desc) lines.push(`📌 *الشغلانة:* ${data.desc}`);
+          lines.push(`📄 *الورق:* ${spec.name || data.paperType} — ${data.grammage} جرام`);
+          if (data.designLength && data.designWidth) {
+            lines.push(`📐 *مقاس القص:* ${data.designLength}×${data.designWidth} سم`);
+          }
+          lines.push(`📦 *الكمية:* ${data.quarterSheets} ورقة ربع (${data.sheetsNeeded} فرخ كامل)`);
+          if (data.totalPieces > 0) {
+            lines.push(`🔢 *إجمالي القطع:* ${data.totalPieces.toLocaleString()} قطعة`);
+          }
+          lines.push("━━━━━━━━━━━━━━");
+          lines.push(`💵 *تكلفة الورق:* ${data.paperCost.toFixed(2)} ج (${data.sheetsNeeded} فرخ × ${data.sheetPrice.toFixed(2)} ج)`);
+          lines.push(`🖨️ *تكلفة الطباعة:* ${data.printCost.toFixed(2)} ج (${data.rajs} تراج × ${sideTxt} — ${colorTxt})`);
+          lines.push(`🔲 *تكلفة الزنكات:* ${data.zinkatCost.toFixed(2)} ج (${zColorTxt} — ${zSideTxt})`);
+          if (data.extraCost > 0) {
+            lines.push(`➕ *إضافات وتشطيب:* ${data.extraCost.toFixed(2)} ج ${data.extraNote ? `(${data.extraNote})` : ""}`);
+          }
+          if (profitAmt > 0) {
+            lines.push(`⚙️ *مصنعية وإدارة تشغيل:* ${profitAmt.toFixed(2)} ج`);
+          }
+          lines.push("━━━━━━━━━━━━━━");
+          lines.push(`💰 *الإجمالي الكلي:* *${clientPrice.toFixed(2)} جنيه*`);
+        }
+
+        return lines.join("\n");
+      }
+
+      function openWhatsApp(phone, text) {
+        let cleanPhone = formatEgyptPhone(phone);
+        let encodedText = encodeURIComponent(text);
+        let url = cleanPhone
+          ? `https://wa.me/${cleanPhone}?text=${encodedText}`
+          : `https://wa.me/?text=${encodedText}`;
+        window.open(url, "_blank");
+      }
+
+      function shareCurrentWhatsApp(mode) {
+        if (!window._lastResult) {
+          showToast("⚠️ أدخل سعر الطن وعدد الورق أولاً لحساب التكلفة قبل المشاركة!");
+          return;
+        }
+        let r = window._lastResult;
+        let currentData = {
+          client: document.getElementById("clientName").value.trim(),
+          phone: document.getElementById("clientPhone").value.trim(),
+          desc: document.getElementById("jobDesc").value.trim(),
+          extraNote: document.getElementById("extraNote").value.trim(),
+          paperType: state.paperType,
+          grammage: state.grammage,
+          designLength: state.designLength,
+          designWidth: state.designWidth,
+          printColors: state.printColors,
+          sides: state.sides,
+          zinkatColors: state.zinkatColors,
+          zinkatSides: state.zinkatSides,
+          extraCost: state.extraCost,
+          ...r,
+        };
+        let msg = buildWhatsAppMessage(currentData, mode);
+        openWhatsApp(currentData.phone, msg);
+      }
+
+      window.shareSavedOrderWhatsApp = function (orderId, mode) {
+        let order = getOrders().find((o) => o.id === orderId);
+        if (!order) return;
+        let msg = buildWhatsAppMessage(order, mode);
+        openWhatsApp(order.phone || "", msg);
+      };
+
+      // ============= UI UPDATES =============
+      function updateCutPreview() {
+        let fit = piecesPerQuarter();
+        let preview = document.getElementById("cutPreview");
+        if (fit.total > 0) {
+          preview.style.display = "flex";
+          document.getElementById("cutCountText").textContent =
+            `الورقة الربع تطلع ${fit.total} قطعة (${fit.rows} × ${fit.cols})`;
+          let spec = PAPER_SPECS[state.paperType];
+          document.getElementById("cutDetails").textContent =
+            `المساحة الصافية بعد سنتيمتر البنسة: ${spec.cutW}×${spec.cutH - 1} سم`;
+          let visual = document.getElementById("cutVisual");
+          let maxR = Math.min(fit.rows, 5),
+            maxC = Math.min(fit.cols, 5);
+          visual.style.gridTemplateColumns = `repeat(${maxC}, 1fr)`;
+          visual.style.gridTemplateRows = `repeat(${maxR}, 1fr)`;
+          visual.innerHTML = "";
+          for (let i = 0; i < maxR * maxC; i++) {
+            let cell = document.createElement("div");
+            cell.className = "cell";
+            visual.appendChild(cell);
+          }
+        } else {
+          preview.style.display = "none";
+        }
+      }
+
+      function updateRajPreview() {
+        let el = document.getElementById("rajPreview");
+        let qty = state.quarterSheets || 0;
+        if (qty <= 0) {
+          el.innerHTML = "💡 أكتب عدد الأوراق الربع لتظهر تفاصيل التراجات";
+          return;
+        }
+        let rajs = Math.ceil(qty / 1000);
+        let pricePerRaj = PRINT_PRICES[state.printColors];
+        let sideTxt = state.sides === 2 ? "وش وظهر" : "وش فقط";
+        el.innerHTML =
+          `<strong style="color:var(--press-blue)">${rajs} تراج</strong> × ${state.sides} وجه (${sideTxt}) × ${pricePerRaj} ج = <strong style="color:var(--success)">${(rajs * state.sides * pricePerRaj).toFixed(2)} ج</strong>`;
+      }
+
+      function updateProfitPreview(r) {
+        let finalEl = document.getElementById("finalClientPriceDisplay");
+        let subEl = document.getElementById("profitBreakdownDisplay");
+        if (!r) {
+          finalEl.textContent = "0.00 ج";
+          subEl.textContent = "التكلفة: 0 ج | مكسبك: 0 ج";
+          return;
+        }
+        finalEl.textContent = r.finalClientTotal.toFixed(2) + " ج";
+        let pctText =
+          r.profitVal > 0 && r.profitMode === "percent" ? ` (${r.profitVal}%)` : "";
+        subEl.innerHTML = `التكلفة: <strong>${r.total.toFixed(2)} ج</strong> | صافي مكسبك: <strong style="color:var(--success)">+${r.profitAmount.toFixed(2)} ج${pctText}</strong>`;
+      }
+
+      function renderResults(r) {
+        updateProfitPreview(r);
+        if (!r) {
+          document.getElementById("resultsArea").innerHTML =
+            '<div class="results-placeholder"><span class="icon">🖨️</span>أدخل سعر الطن وعدد الورق ليظهر الحساب فوراً</div>';
+          return;
+        }
+        let spec = r.spec;
+        let pieces = piecesPerQuarter();
+        let designInfo =
+          pieces.total > 0
+            ? `<div class="result-item">
+                 <label>إجمالي القطع الصافية</label>
+                 <div class="val gold">${r.totalPieces.toLocaleString()} قطعة</div>
+                 <div class="unit">القطعة عليك: ${r.unitCost.toFixed(2)} ج | للعميل: ${r.clientUnitCost.toFixed(2)} ج</div>
+               </div>`
+            : "";
+        let extraRow =
+          state.extraCost > 0
+            ? `<div class="result-item"><label>إضافات وتشطيب</label><div class="val">${state.extraCost.toFixed(2)}</div><div class="unit">جنيه</div></div>`
+            : "";
+        let zinkatDesc =
+          (state.zinkatColors === 4 ? "4 ألوان" : "1 لون") +
+          " — " +
+          (state.zinkatSides === 2 ? "طقمين (وش وظهر)" : "طقم واحد (وش)");
+        let rajInfo = `${r.rajs} تراج × ${state.sides} وجه × ${PRINT_PRICES[state.printColors]} ج`;
+
+        document.getElementById("resultsArea").innerHTML = `
+          <div class="result-grid">
+            <div class="result-item"><label>سعر الفرخ الكبير (${spec.name})</label><div class="val">${r.sheetPrice.toFixed(2)} ج</div><div class="unit">وزن ${state.grammage} جرام</div></div>
+            <div class="result-item"><label>الورق المطلوب</label><div class="val">${r.sheetsNeeded} فرخ كامل</div><div class="unit">يعطي ${r.quarterSheets} ورقة ربع</div></div>
+            <div class="result-item"><label>إجمالي تكلفة الورق</label><div class="val gold">${r.paperCost.toFixed(2)} ج</div><div class="unit">${r.sheetsNeeded} فرخ × ${r.sheetPrice.toFixed(2)} ج</div></div>
+            <div class="result-item"><label>تكلفة الطباعة</label><div class="val">${r.printCost.toFixed(2)} ج</div><div class="unit">${rajInfo}</div></div>
+            <div class="result-item"><label>تكلفة الزنكات</label><div class="val">${r.zinkatCost.toFixed(2)} ج</div><div class="unit">${zinkatDesc}</div></div>
+            ${designInfo}
+            ${extraRow}
+          </div>
+          <div class="raj-breakdown">
+            <span><strong>إجمالي التكلفة الأساسية:</strong> ${r.total.toFixed(2)} ج</span>
+            ${r.profitAmount > 0 ? `<span><strong>المكسب المضاف:</strong> +${r.profitAmount.toFixed(2)} ج</span>` : ""}
+          </div>
+          <div class="total-bar">
+            <div class="tlabel">💰 السعر النهائي للعميل</div>
+            <div class="amount">${r.finalClientTotal.toFixed(2)} جنيه</div>
+          </div>`;
+      }
+
+      function autoCalc() {
+        readInputs();
+        updateCutPreview();
+        updateRajPreview();
+        let result = computeCosts();
+        if (result) {
+          renderResults(result);
+          window._lastResult = result;
+        } else {
+          renderResults(null);
+          window._lastResult = null;
+        }
+      }
+
+      // ============= UI TOGGLES =============
+      function toggleGroup(groupId, btn) {
+        document
+          .querySelectorAll("#" + groupId + " .btn-toggle")
+          .forEach((b) => b.classList.remove("active"));
+        if (btn) btn.classList.add("active");
+      }
+
+      function selectPaperType(type, btn) {
+        state.paperType = type;
+        toggleGroup("paperTypeGroup", btn);
+        document.getElementById("paperInfo70").style.display = type === "70x100" ? "flex" : "none";
+        document.getElementById("paperInfo66").style.display = type === "66x88" ? "flex" : "none";
+        onDesignSizeChange();
+      }
+
+      function selectGrammage(g, btn) {
+        state.grammage = g;
+        toggleGroup("grammageGroup", btn);
+        autoCalc();
+      }
+
+      function selectColors(c, btn) {
+        state.printColors = c;
+        toggleGroup("printColorGroup", btn);
+        if (document.getElementById("syncZinkat").checked) {
+          state.zinkatColors = c;
+          toggleGroup("zinkatColorGroup", document.getElementById("zColor" + c));
+        }
+        autoCalc();
+      }
+
+      function selectSides(s, btn) {
+        state.sides = s;
+        toggleGroup("sidesGroup", btn);
+        if (document.getElementById("syncZinkat").checked) {
+          state.zinkatSides = s;
+          toggleGroup("zinkatSidesGroup", document.getElementById("zSide" + s));
+        }
+        autoCalc();
+      }
+
+      function selectZinkatColors(c, btn) {
+        state.zinkatColors = c;
+        toggleGroup("zinkatColorGroup", btn);
+        if (c !== state.printColors) {
+          document.getElementById("syncZinkat").checked = false;
+        }
+        autoCalc();
+      }
+
+      function selectZinkatSides(s, btn) {
+        state.zinkatSides = s;
+        toggleGroup("zinkatSidesGroup", btn);
+        if (s !== state.sides) {
+          document.getElementById("syncZinkat").checked = false;
+        }
+        autoCalc();
+      }
+
+      function onSyncToggle() {
+        if (document.getElementById("syncZinkat").checked) {
+          state.zinkatColors = state.printColors;
+          state.zinkatSides = state.sides;
+          toggleGroup("zinkatColorGroup", document.getElementById("zColor" + state.printColors));
+          toggleGroup("zinkatSidesGroup", document.getElementById("zSide" + state.sides));
+          autoCalc();
+        }
+      }
+
+      // ============= TABS =============
+      function switchTab(name, btn) {
+        document.querySelectorAll(".tab-panel").forEach((p) => p.classList.remove("active"));
+        document.querySelectorAll(".tab-btn").forEach((b) => b.classList.remove("active"));
+        document.getElementById("tab-" + name).classList.add("active");
+        if (btn) btn.classList.add("active");
+        if (name === "orders") renderPending();
+        if (name === "done") renderDone();
+      }
+
+      // ============= ORDERS (LOCAL STORAGE) =============
+      function getOrders() {
+        return JSON.parse(localStorage.getItem("print_orders") || "[]");
+      }
+      function saveOrders(arr) {
+        localStorage.setItem("print_orders", JSON.stringify(arr));
+      }
+
+      function updateBadges() {
+        let orders = getOrders();
+        document.getElementById("pendingBadge").textContent = orders.filter(
+          (o) => o.status === "pending"
+        ).length;
+        document.getElementById("doneBadge").textContent = orders.filter(
+          (o) => o.status === "done"
+        ).length;
+      }
+
+      function saveOrder() {
+        if (!window._lastResult) {
+          showToast("⚠️ أدخل سعر الطن وعدد الورق أولاً لحفظ الطلب!");
+          return;
+        }
+        let r = window._lastResult;
+        let order = {
+          id: Date.now(),
+          client: document.getElementById("clientName").value.trim(),
+          phone: document.getElementById("clientPhone").value.trim(),
+          desc: document.getElementById("jobDesc").value.trim(),
+          extraNote: document.getElementById("extraNote").value.trim(),
+          status: "pending",
+          date: new Date().toLocaleDateString("ar-EG"),
+          time: new Date().toLocaleTimeString("ar-EG", { hour: "2-digit", minute: "2-digit" }),
+          paperType: state.paperType,
+          grammage: state.grammage,
+          tonPrice: state.tonPrice,
+          designLength: state.designLength,
+          designWidth: state.designWidth,
+          quarterSheets: state.quarterSheets,
+          printColors: state.printColors,
+          sides: state.sides,
+          zinkatColors: state.zinkatColors,
+          zinkatSides: state.zinkatSides,
+          extraCost: state.extraCost,
+          ...r,
+        };
+        let orders = getOrders();
+        orders.unshift(order);
+        saveOrders(orders);
+        updateBadges();
+        renderPending();
+        showToast("✅ تم حفظ الطلب بنجاح في قائمة الطلبات الجارية");
+      }
+
+      function renderPending() {
+        let orders = getOrders().filter((o) => o.status === "pending");
+        document.getElementById("pendingCount").textContent = orders.length + " طلب جاري";
+        let list = document.getElementById("pendingList");
+        if (!orders.length) {
+          list.innerHTML = '<div class="empty-state"><span class="icon">📭</span>لا توجد طلبات جارية حالياً</div>';
+          return;
+        }
+        list.innerHTML = orders.map((o) => orderCard(o, "pending")).join("");
+      }
+
+      function renderDone() {
+        let orders = getOrders().filter((o) => o.status === "done");
+        document.getElementById("doneCount").textContent = orders.length + " طلب مسلّم";
+        let list = document.getElementById("doneList");
+        if (!orders.length) {
+          list.innerHTML = '<div class="empty-state"><span class="icon">✅</span>لا توجد طلبات مسلّمة في الأرشيف</div>';
+          return;
+        }
+        list.innerHTML = orders.map((o) => orderCard(o, "done")).join("");
+      }
+
+      function orderCard(o, status) {
+        let spec = PAPER_SPECS[o.paperType] || {};
+        let isDone = status === "done";
+        let clientDisplay = o.client || '<span class="no-name">عميل بدون اسم</span>';
+        let phoneBadge = o.phone ? `<span class="phone-tag">📱 ${o.phone}</span>` : "";
+        let doneBadge = isDone ? '<span class="done-badge">✅ مسلّمة</span>' : "";
+        let zinkatDesc =
+          (o.zinkatColors === 4 ? "4 ألوان" : "1 لون") +
+          " " +
+          (o.zinkatSides === 2 ? "وش وظهر" : "وش فقط");
+
+        let finalPrice = o.finalClientTotal !== undefined ? o.finalClientTotal : o.total;
+        let profitInfo =
+          o.profitAmount > 0
+            ? ` | <span style="color:var(--success);font-weight:700;">مكسب: +${o.profitAmount.toFixed(2)} ج</span>`
+            : "";
+
+        return `
+          <div class="order-card ${isDone ? "done-card" : ""}">
+            <div style="flex:1;min-width:0">
+              <div class="order-client">${clientDisplay} ${phoneBadge} ${doneBadge}</div>
+              ${o.desc ? `<div class="order-detail">📌 ${o.desc}</div>` : ""}
+              <div class="order-meta">
+                <span class="info-pill">${spec.name || o.paperType}</span>
+                <span class="info-pill">${o.grammage} جم</span>
+                <span class="info-pill">${o.sheetsNeeded || Math.ceil(o.quarterSheets / 4)} فرخ (${o.quarterSheets} ربع)</span>
+                <span class="info-pill">${o.printColors === 4 ? "4 ألوان" : "1 لون"}</span>
+                <span class="info-pill">${o.sides === 2 ? "وش وظهر" : "وش فقط"}</span>
+                ${o.designLength ? `<span class="info-pill">📐 ${o.designLength}×${o.designWidth} سم</span>` : ""}
+              </div>
+              <div class="order-detail">
+                ورق: <strong>${o.paperCost.toFixed(2)} ج</strong> | طباعة: <strong>${o.printCost.toFixed(2)} ج</strong> | زنكات: <strong>${o.zinkatCost.toFixed(2)} ج</strong> (${zinkatDesc})
+                ${o.extraCost ? `| إضافي: <strong>${o.extraCost.toFixed(2)} ج</strong>` : ""}
+                ${profitInfo}
+              </div>
+              <div class="order-time">🕐 ${o.date} — ${o.time}</div>
+            </div>
+            <div class="order-actions">
+              <div class="order-price ${isDone ? "done-price" : ""}">${finalPrice.toFixed(2)} ج</div>
+              <div class="action-row">
+                <button class="act-btn wa-act" onclick="shareSavedOrderWhatsApp(${o.id}, 'summary')" title="إرسال الإجمالي فقط عبر واتساب">📲 إجمالي</button>
+                <button class="act-btn wa-act" onclick="shareSavedOrderWhatsApp(${o.id}, 'detailed')" title="إرسال التفاصيل الكاملة عبر واتساب">📋 تفصيلي</button>
+                ${
+                  !isDone
+                    ? `<button class="act-btn done-btn" onclick="markDone(${o.id})">✅ سلّمت</button>`
+                    : `<button class="act-btn restore-act" onclick="restore(${o.id})">↩️ رجّع</button>`
+                }
+                <button class="act-btn del-act" onclick="deleteOrder(${o.id})">🗑️</button>
+              </div>
+            </div>
+          </div>`;
+      }
+
+      window.markDone = function (id) {
+        let orders = getOrders().map((o) => (o.id === id ? { ...o, status: "done" } : o));
+        saveOrders(orders);
+        updateBadges();
+        renderPending();
+        renderDone();
+        showToast("✅ تم نقل الطلب إلى قائمة المسلّمة");
+      };
+
+      window.restore = function (id) {
+        let orders = getOrders().map((o) => (o.id === id ? { ...o, status: "pending" } : o));
+        saveOrders(orders);
+        updateBadges();
+        renderPending();
+        renderDone();
+        showToast("↩️ تم إرجاع الطلب إلى القائمة الجارية");
+      };
+
+      window.deleteOrder = function (id) {
+        if (!confirm("هل أنت متأكد من حذف هذا الطلب نهائياً؟")) return;
+        let orders = getOrders().filter((o) => o.id !== id);
+        saveOrders(orders);
+        updateBadges();
+        renderPending();
+        renderDone();
+        showToast("🗑️ تم حذف الطلب");
+      };
+
+      function clearDone() {
+        if (!confirm("مسح كل الطلبات المسلّمة من الأرشيف؟")) return;
+        let orders = getOrders().filter((o) => o.status !== "done");
+        saveOrders(orders);
+        updateBadges();
+        renderDone();
+        showToast("🗑️ تم مسح الأرشيف بالكامل");
+      }
+
+      function clearAll() {
+        document.getElementById("designLength").value = "";
+        document.getElementById("designWidth").value = "";
+        document.getElementById("quarterSheetsInput").value = "";
+        document.getElementById("targetPiecesInput").value = "";
+        document.getElementById("extraCost").value = "";
+        document.getElementById("extraNote").value = "";
+        document.getElementById("clientName").value = "";
+        document.getElementById("clientPhone").value = "";
+        document.getElementById("jobDesc").value = "";
+        document.getElementById("profitValue").value = "";
+        state.designLength = 0;
+        state.designWidth = 0;
+        state.quarterSheets = 0;
+        state.extraCost = 0;
+        state.profitVal = 0;
+        renderResults(null);
+        document.getElementById("cutPreview").style.display = "none";
+        document.getElementById("rajPreview").innerHTML =
+          "💡 أكتب عدد الأوراق الربع لتظهر تفاصيل التراجات";
+        window._lastResult = null;
+        showToast("✨ تم تصفير الحاسبة (مع الاحتفاظ بسعر الطن)");
+      }
+
+      // ============= INITIALIZE =============
+      window.addEventListener("DOMContentLoaded", () => {
+        const savedTon = localStorage.getItem("saved_ton_price");
+        if (savedTon) {
+          document.getElementById("tonPrice").value = savedTon;
+        }
+        autoCalc();
+        updateBadges();
+      });
+    </script>
+  </body>
 </html>
