@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link  rel="icon" href="./1.svg" type="Dark Code">
     <title>حاسبة المطبعة الاحترافية</title>
     <link
       href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap"
@@ -58,6 +59,8 @@
         align-items: center;
         justify-content: space-between;
         padding-bottom: 16px;
+        flex-wrap: wrap;
+        gap: 10px;
       }
       .header-title {
         display: flex;
@@ -98,6 +101,7 @@
         padding: 0 20px;
         gap: 4px;
         border-bottom: 3px solid rgba(201, 168, 76, 0.4);
+        overflow-x: auto;
       }
       .tab-btn {
         padding: 13px 20px;
@@ -114,6 +118,7 @@
         display: flex;
         align-items: center;
         gap: 6px;
+        white-space: nowrap;
       }
       .tab-btn:hover {
         color: rgba(255, 255, 255, 0.85);
@@ -247,6 +252,11 @@
         grid-template-columns: 1fr 1fr;
         gap: 11px;
       }
+      .field-row-3 {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 11px;
+      }
       .btn-group {
         display: flex;
         gap: 7px;
@@ -277,6 +287,11 @@
         border-color: var(--press-blue);
         color: white;
       }
+      .btn-toggle.gold-active.active {
+        background: var(--gold);
+        border-color: var(--gold);
+        color: #1a1a0a;
+      }
       .preset-chips {
         display: flex;
         gap: 5px;
@@ -300,7 +315,7 @@
         color: #fff;
       }
       .section-title {
-        font-size: 0.72rem;
+        font-size: 0.75rem;
         font-weight: 700;
         color: var(--text-muted);
         margin-bottom: 6px;
@@ -363,6 +378,25 @@
         border-color: var(--crimson);
         color: var(--crimson);
         background: #fff5f5;
+      }
+      /* Live Mini Badge inside Cards */
+      .live-mini-box {
+        background: linear-gradient(135deg, #f3f8fc, #e9f2fa);
+        border: 1px solid rgba(26, 58, 92, 0.2);
+        border-radius: 10px;
+        padding: 10px 12px;
+        font-size: 0.8rem;
+        color: var(--press-blue);
+        margin-top: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .live-mini-box strong {
+        color: var(--success);
+        font-size: 0.92rem;
       }
       /* Profit & WhatsApp Box */
       .share-box {
@@ -466,17 +500,6 @@
         background: rgba(201, 168, 76, 0.1);
         pointer-events: none;
       }
-      .results-placeholder {
-        text-align: center;
-        color: rgba(255, 255, 255, 0.4);
-        font-size: 0.88rem;
-        padding: 24px 0;
-      }
-      .results-placeholder .icon {
-        font-size: 2.1rem;
-        display: block;
-        margin-bottom: 7px;
-      }
       .result-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -506,7 +529,7 @@
       }
       .result-item .unit {
         font-size: 0.7rem;
-        color: rgba(255, 255, 255, 0.5);
+        color: rgba(255, 255, 255, 0.55);
         margin-top: 2px;
       }
       .raj-breakdown {
@@ -794,6 +817,33 @@
         display: block;
         margin-bottom: 7px;
       }
+      /* Settings items grid */
+      .settings-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 12px;
+        margin-top: 12px;
+      }
+      .setting-item-card {
+        background: var(--surface2);
+        border: 1.5px solid var(--border);
+        border-radius: 12px;
+        padding: 12px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .setting-item-card h4 {
+        color: var(--press-blue);
+        font-size: 0.92rem;
+        font-weight: 800;
+      }
+      .setting-item-card .sub-val {
+        color: var(--success);
+        font-weight: 700;
+        font-size: 0.85rem;
+      }
       .toast {
         position: fixed;
         bottom: 24px;
@@ -832,15 +882,15 @@
         <div class="header-title">
           <div class="header-icon">🖨️</div>
           <div>
-            <h1>حاسبة المطبعة</h1>
-            <p>نظام حسابات الطباعة وحساب الأرباح ومشاركة واتساب</p>
+            <h1>حاسبة المطبعة الاحترافية</h1>
+            <p>حساب بالطن أو بالفرخ المباشر (أستيكر / كوشيه) + إعدادات أسعار مرنة</p>
           </div>
         </div>
-        <div class="header-badge">v3.2 Profit+</div>
+        <div class="header-badge">v4.0 Pro Dynamic</div>
       </div>
       <div class="tabs-nav">
         <button class="tab-btn active" onclick="switchTab('calc', this)">
-          🧮 الحاسبة
+          🧮 الحاسبة الذكية
         </button>
         <button class="tab-btn" onclick="switchTab('orders', this)">
           📋 الطلبات الجارية <span class="tab-badge" id="pendingBadge">0</span>
@@ -848,25 +898,41 @@
         <button class="tab-btn" onclick="switchTab('done', this)">
           ✅ المسلّمة <span class="tab-badge green" id="doneBadge">0</span>
         </button>
+        <button class="tab-btn" onclick="switchTab('settings', this)">
+          ⚙️ الإعدادات والأسعار
+        </button>
       </div>
     </header>
 
-    <!-- TAB: CALCULATOR -->
+    <!-- ==================== TAB 1: CALCULATOR ==================== -->
     <div class="tab-panel active" id="tab-calc">
       <div class="container">
         <div class="grid mb">
-          <!-- Paper Settings -->
+          <!-- 1. Paper Settings & Pricing Mode -->
           <div class="card highlighted">
             <div class="card-header">
               <div class="card-header-left">
                 <div class="card-icon ci-blue">📄</div>
                 <div>
-                  <h2>إعدادات الورق</h2>
-                  <p>نوع الفرخ والجرام وسعر الطن</p>
+                  <h2>إعدادات الورق وطريقة التسعير</h2>
+                  <p>اختار الحساب بسعر الطن أو بسعر الفرخ (استيكر / ورق خاص)</p>
                 </div>
               </div>
             </div>
-            <div class="section-title">نوع الفرخ</div>
+
+            <!-- Pricing Method Switcher -->
+            <div class="section-title">طريقة حساب سعر الورق:</div>
+            <div class="btn-group" id="pricingModeGroup">
+              <button class="btn-toggle gold-active active" onclick="selectPricingMode('ton', this)">
+                ⚖️ حساب بسعر الطن والجرام
+              </button>
+              <button class="btn-toggle gold-active" onclick="selectPricingMode('sheet', this)">
+                🏷️ حساب بسعر الفرخ المباشر (استيكر / غيره)
+              </button>
+            </div>
+
+            <!-- Paper Size / Type -->
+            <div class="section-title">مقاس الفرخ الأساسي:</div>
             <div class="btn-group" id="paperTypeGroup">
               <button class="btn-toggle active" onclick="selectPaperType('70x100', this)">
                 فرخ 70×100
@@ -875,61 +941,96 @@
                 فرخ 66×88 (جاير)
               </button>
             </div>
-            <div id="paperInfo70" class="size-info">
-              <span class="size-badge">📐 مقاس الربع: 35×50 سم</span>
-              <span class="size-badge">✂️ الفرخ = 4 ورقات ربع</span>
+
+            <!-- Mode A: Ton & Grammage -->
+            <div id="tonPricingSection">
+              <div class="divider"></div>
+              <div class="section-title">جرام الورق (كوشيه / طبع):</div>
+              <div class="btn-group" id="grammageGroup"></div>
+              <label>سعر الطن (بالألف جنيه) — يُحفظ تلقائياً</label>
+              <input
+                type="number"
+                id="tonPrice"
+                placeholder="مثال: 58 (يعني 58,000 جنيه)"
+                min="0"
+                step="any"
+                oninput="onTonPriceInput()"
+              />
             </div>
-            <div id="paperInfo66" class="size-info" style="display: none">
-              <span class="size-badge">📐 مقاس الربع الجاير: 33×44 سم</span>
-              <span class="size-badge">✂️ الفرخ = 4 ورقات ربع</span>
+
+            <!-- Mode B: Direct Sheet Price (Sticker / Special Paper) -->
+            <div id="sheetPricingSection" style="display: none;">
+              <div class="divider"></div>
+              <div class="section-title">
+                <span>أسعار أفرخ سريعة (من الإعدادات):</span>
+              </div>
+              <div class="preset-chips" id="sheetPresetChips"></div>
+
+              <label>سعر الفرخ الواحد (جنيه) — مثل فرخ الاستيكر (16 ج)</label>
+              <input
+                type="number"
+                id="directSheetPriceInput"
+                placeholder="مثال: 16"
+                min="0"
+                step="any"
+                oninput="onDirectSheetPriceInput()"
+              />
             </div>
+
             <div class="divider"></div>
-            <div class="section-title">جرام الورق (كوشيه / طبع)</div>
-            <div class="btn-group" id="grammageGroup">
-              <button class="btn-toggle" onclick="selectGrammage(70, this)">70</button>
-              <button class="btn-toggle" onclick="selectGrammage(80, this)">80</button>
-              <button class="btn-toggle" onclick="selectGrammage(115, this)">115</button>
-              <button class="btn-toggle" onclick="selectGrammage(130, this)">130</button>
-              <button class="btn-toggle active" onclick="selectGrammage(150, this)">150</button>
-              <button class="btn-toggle" onclick="selectGrammage(200, this)">200</button>
-              <button class="btn-toggle" onclick="selectGrammage(250, this)">250</button>
-              <button class="btn-toggle" onclick="selectGrammage(300, this)">300</button>
-              <button class="btn-toggle" onclick="selectGrammage(350, this)">350</button>
+
+            <!-- Sheet Division (تلقائي 4 ويمكن تغييره إلى 6 أو 8 أو أي رقم) -->
+            <div class="section-title">
+              <span>الفرخ يطلع كام ورقة مكنة (قسمة الفرخ):</span>
+              <span style="color: var(--press-blue);">الافتراضي = 4</span>
             </div>
-            <div class="divider"></div>
-            <label>سعر الطن (بالألف جنيه) — يُحفظ تلقائياً</label>
-            <input
-              type="number"
-              id="tonPrice"
-              placeholder="مثال: 58 (يعني 58,000 جنيه)"
-              min="0"
-              step="any"
-              oninput="onTonPriceInput()"
-            />
+            <div class="btn-group" id="sheetDivGroup" style="margin-bottom: 8px;">
+              <button type="button" class="btn-toggle" onclick="setSheetDivisor(2)">2</button>
+              <button type="button" class="btn-toggle" onclick="setSheetDivisor(3)">3</button>
+              <button type="button" class="btn-toggle active" onclick="setSheetDivisor(4)">4 (ربع)</button>
+              <button type="button" class="btn-toggle" onclick="setSheetDivisor(6)">6</button>
+              <button type="button" class="btn-toggle" onclick="setSheetDivisor(8)">8</button>
+              <button type="button" class="btn-toggle" onclick="setSheetDivisor(9)">9</button>
+            </div>
+            <div class="field-row" style="align-items: center;">
+              <div>
+                <label>أو اكتب رقم القسمة يدوياً:</label>
+                <input
+                  type="number"
+                  id="sheetDivisorInput"
+                  value="4"
+                  min="1"
+                  step="1"
+                  oninput="onManualDivisorInput()"
+                  style="margin-bottom: 0;"
+                />
+              </div>
+              <div class="live-mini-box" style="margin-top: 18px;">
+                <div>
+                  <span style="display:block; font-size:0.72rem; color:var(--text-muted);">سعر الفرخ الكبير: <b id="liveFullSheetPrice">0.00 ج</b></span>
+                  <span>سعر الورقة بعد القسمة (<span id="liveDivLabel">÷4</span>):</span>
+                </div>
+                <strong id="liveSmallPaperPrice">0.00 ج</strong>
+              </div>
+            </div>
           </div>
 
-          <!-- Design & Quantity -->
+          <!-- 2. Design & Quantity -->
           <div class="card">
             <div class="card-header">
               <div class="card-header-left">
                 <div class="card-icon ci-gold">📏</div>
                 <div>
-                  <h2>مقاس التصميم والكمية</h2>
-                  <p>اختار مقاس جاهز أو اكتب الأبعاد يدوياً</p>
+                  <h2>مقاس التصميم والكمية والورق</h2>
+                  <p>كل رقم تكتبه يظهر حسابه وتفاصيله تلقائياً في الحال</p>
                 </div>
               </div>
             </div>
 
             <div class="section-title">
-              <span>مقاسات سريعة (تلقائي):</span>
+              <span>مقاسات سريعة جاهزة:</span>
             </div>
-            <div class="preset-chips">
-              <button type="button" class="preset-chip" onclick="setPresetSize(21, 29.7)">A4 (21×29.7)</button>
-              <button type="button" class="preset-chip" onclick="setPresetSize(14.8, 21)">A5 (14.8×21)</button>
-              <button type="button" class="preset-chip" onclick="setPresetSize(10.5, 14.8)">A6 (10.5×14.8)</button>
-              <button type="button" class="preset-chip" onclick="setPresetSize(9, 5.5)">كارت شخصي (9×5.5)</button>
-              <button type="button" class="preset-chip" onclick="setPresetSize(17, 24)">17×24 سم</button>
-            </div>
+            <div class="preset-chips" id="sizePresetChips"></div>
 
             <div class="field-row">
               <div>
@@ -968,7 +1069,7 @@
 
             <div class="field-row">
               <div>
-                <label>عدد الأوراق الربع المطلوبة</label>
+                <label>عدد الورق المطلوب (ورق المكنة / الربع)</label>
                 <input
                   type="number"
                   id="quarterSheetsInput"
@@ -979,42 +1080,53 @@
                 />
               </div>
               <div>
-                <label>أو الكمية بالقطعة (اختياري)</label>
+                <label>أو الكمية بالقطعة النهائية (اختياري)</label>
                 <input
                   type="number"
                   id="targetPiecesInput"
-                  placeholder="مثال: 4000 فلاير"
+                  placeholder="مثال: 4000 قطعة / استيكر"
                   min="0"
                   step="any"
                   oninput="onPiecesInput()"
                 />
               </div>
             </div>
-            <small style="color: var(--text-muted); display: block; margin-top: -6px;">
-              💡 يمكنك كتابة عدد الورق الربع مباشرة، أو كتابة عدد القطع النهائية للعميل وسيحسب الورق تلقائياً.
-            </small>
+
+            <!-- Live Paper Calculation Box -->
+            <div class="live-mini-box" id="livePaperCalcBox">
+              <div>
+                <span>📄 عدد الأفرخ الكاملة: <strong id="liveFullSheetsCount" style="color:var(--press-blue)">0</strong> فرخ</span>
+                <span style="display:block; font-size:0.73rem; color:var(--text-muted);" id="livePaperFormulaText">
+                  (0 ورقة ÷ 4 = 0 فرخ)
+                </span>
+              </div>
+              <div style="text-align: left;">
+                <span style="font-size:0.72rem; color:var(--text-muted); display:block;">تكلفة الورق لوحده:</span>
+                <strong id="livePaperTotalCost">0.00 ج</strong>
+              </div>
+            </div>
           </div>
         </div>
 
         <div class="grid mb">
-          <!-- Printing -->
+          <!-- 3. Printing -->
           <div class="card">
             <div class="card-header">
               <div class="card-header-left">
                 <div class="card-icon ci-blue">🖨️</div>
                 <div>
                   <h2>الطباعة — التراجات</h2>
-                  <p>كل 1000 ورقة ربع (أو كسرها) = تراج واحد</p>
+                  <p id="trajHeaderSub">كل 1000 ورقة (أو كسرها) = تراج واحد</p>
                 </div>
               </div>
             </div>
             <div class="section-title">عدد الألوان</div>
             <div class="btn-group" id="printColorGroup">
-              <button class="btn-toggle" onclick="selectColors(1, this)">
-                1 لون — 100 ج / تراج
+              <button class="btn-toggle" id="pColor1Btn" onclick="selectColors(1, this)">
+                1 لون — <span id="lblPrint1">100</span> ج / تراج
               </button>
-              <button class="btn-toggle active" onclick="selectColors(4, this)">
-                4 ألوان — 400 ج / تراج
+              <button class="btn-toggle active" id="pColor4Btn" onclick="selectColors(4, this)">
+                4 ألوان — <span id="lblPrint4">400</span> ج / تراج
               </button>
             </div>
             <div class="section-title">وش / وش وظهر</div>
@@ -1026,19 +1138,17 @@
                 وش وظهر (× 2)
               </button>
             </div>
-            <div class="raj-preview-box" id="rajPreview">
-              💡 أكتب عدد الأوراق الربع لتظهر تفاصيل التراجات
-            </div>
+            <div class="raj-preview-box" id="rajPreview"></div>
           </div>
 
-          <!-- Zinkat -->
+          <!-- 4. Zinkat -->
           <div class="card">
             <div class="card-header">
               <div class="card-header-left">
                 <div class="card-icon ci-red">🔲</div>
                 <div>
                   <h2>الزنكات (CTP)</h2>
-                  <p>تُحسب مرة واحدة للشغلانة</p>
+                  <p>تُحسب تلقائياً وتظهر تكلفتها فوراً</p>
                 </div>
               </div>
               <label class="sync-label" title="ربط الزنكات تلقائياً مع اختيارات الطباعة">
@@ -1049,10 +1159,10 @@
             <div class="section-title">عدد الألوان</div>
             <div class="btn-group" id="zinkatColorGroup">
               <button class="btn-toggle" id="zColor1" onclick="selectZinkatColors(1, this)">
-                1 لون — 65 ج
+                1 لون — <span id="lblZink1">65</span> ج
               </button>
               <button class="btn-toggle active" id="zColor4" onclick="selectZinkatColors(4, this)">
-                4 ألوان — 250 ج
+                4 ألوان — <span id="lblZink4">250</span> ج
               </button>
             </div>
             <div class="section-title">وش / وش وظهر</div>
@@ -1064,16 +1174,12 @@
                 طقمين (وش وظهر × 2)
               </button>
             </div>
-            <div class="raj-preview-box" style="font-size: 0.74rem;">
-              <strong style="color: var(--press-blue)">أسعار الزنكات:</strong><br />
-              1 لون وش: <strong>65 ج</strong> &nbsp;|&nbsp; 1 لون وش وظهر: <strong>130 ج</strong><br />
-              4 ألوان وش: <strong>250 ج</strong> &nbsp;|&nbsp; 4 ألوان وش وظهر: <strong>500 ج</strong>
-            </div>
+            <div class="raj-preview-box" id="zinkatLiveBox" style="font-size: 0.78rem;"></div>
           </div>
         </div>
 
         <div class="grid mb">
-          <!-- Client & Phone -->
+          <!-- 5. Client & Phone -->
           <div class="card">
             <div class="card-header">
               <div class="card-header-left">
@@ -1095,10 +1201,10 @@
               </div>
             </div>
             <label>وصف الشغلانة</label>
-            <input type="text" id="jobDesc" placeholder="مثال: فلايرات A5 مطعم النيل" />
+            <input type="text" id="jobDesc" placeholder="مثال: استيكر أو فلايرات A5" />
           </div>
 
-          <!-- Extra -->
+          <!-- 6. Extra -->
           <div class="card">
             <div class="card-header">
               <div class="card-header-left">
@@ -1119,27 +1225,22 @@
               oninput="autoCalc()"
             />
             <label>ملاحظة على الإضافة</label>
-            <input type="text" id="extraNote" placeholder="مثال: سلوفان مط + تكسير" />
+            <input type="text" id="extraNote" placeholder="مثال: سلوفان مط + تكسير" oninput="autoCalc()" />
           </div>
         </div>
 
-        <!-- Results & Actions -->
+        <!-- 7. Live Results & Actions (تظهر دائماً وتحدث كل خانة لحظياً) -->
         <div class="card full mb">
           <div class="card-header">
             <div class="card-header-left">
               <div class="card-icon ci-gold">🧮</div>
               <div>
-                <h2>نتيجة الحساب النهائية</h2>
-                <p>تفصيل التكلفة الفعلية + إضافة نسبة الربح قبل الإرسال للعميل</p>
+                <h2>نتيجة الحساب الفورية (تحديث تلقائي لأي رقم تكتبه)</h2>
+                <p>كل بند يظهر حسابه مباشرة بدون الحاجة لإدخال باقي الخانات</p>
               </div>
             </div>
           </div>
-          <div class="results-area" id="resultsArea">
-            <div class="results-placeholder">
-              <span class="icon">🖨️</span>
-              أدخل سعر الطن وعدد الورق ليظهر الحساب فوراً
-            </div>
-          </div>
+          <div class="results-area" id="resultsArea"></div>
 
           <!-- Profit & WhatsApp Share Box -->
           <div class="share-box">
@@ -1236,7 +1337,7 @@
       </div>
     </div>
 
-    <!-- TAB: ORDERS -->
+    <!-- ==================== TAB 2: ORDERS ==================== -->
     <div class="tab-panel" id="tab-orders">
       <div class="container">
         <div class="card full">
@@ -1249,7 +1350,7 @@
       </div>
     </div>
 
-    <!-- TAB: DONE -->
+    <!-- ==================== TAB 3: DONE ==================== -->
     <div class="tab-panel" id="tab-done">
       <div class="container">
         <div class="card full">
@@ -1271,10 +1372,169 @@
       </div>
     </div>
 
+    <!-- ==================== TAB 4: SETTINGS & PRICES ==================== -->
+    <div class="tab-panel" id="tab-settings">
+      <div class="container">
+        <!-- أ) أسعار الطباعة والزنكات والثوابت -->
+        <div class="card full mb highlighted">
+          <div class="card-header">
+            <div class="card-header-left">
+              <div class="card-icon ci-blue">⚙️</div>
+              <div>
+                <h2>إعدادات أسعار الطباعة والزنكات والثوابت</h2>
+                <p>عدّل أي سعر هنا وسيتم حفظه فوراً وتطبيقه على الحاسبة بدون تعديل الكود</p>
+              </div>
+            </div>
+            <button
+              type="button"
+              class="act-btn del-act"
+              onclick="resetDefaultSettings()"
+              style="padding: 7px 14px;"
+            >
+              🔄 استعادة الأرقام الافتراضية
+            </button>
+          </div>
+
+          <div class="field-row-3">
+            <div>
+              <label>سعر تراج الطباعة (1 لون) بالجنيه:</label>
+              <input type="number" id="setPrint1" step="any" oninput="saveDynamicSettings()" />
+            </div>
+            <div>
+              <label>سعر تراج الطباعة (4 ألوان) بالجنيه:</label>
+              <input type="number" id="setPrint4" step="any" oninput="saveDynamicSettings()" />
+            </div>
+            <div>
+              <label>عدد الورق في التراج الواحد (الافتراضي 1000):</label>
+              <input type="number" id="setRajSize" step="100" oninput="saveDynamicSettings()" />
+            </div>
+          </div>
+
+          <div class="field-row-3">
+            <div>
+              <label>سعر الزنكة (1 لون - طقم وش) بالجنيه:</label>
+              <input type="number" id="setZink1" step="any" oninput="saveDynamicSettings()" />
+            </div>
+            <div>
+              <label>سعر الزنكات (4 ألوان - طقم وش) بالجنيه:</label>
+              <input type="number" id="setZink4" step="any" oninput="saveDynamicSettings()" />
+            </div>
+            <div>
+              <label>قسمة الفرخ الافتراضية عند فتح البرنامج:</label>
+              <input type="number" id="setDefaultDivisor" step="1" min="1" oninput="saveDynamicSettings()" />
+            </div>
+          </div>
+
+          <div class="field-row-3">
+            <div>
+              <label>سعر الطن الافتراضي (بالألف جنيه):</label>
+              <input type="number" id="setDefaultTon" step="any" oninput="saveDynamicSettings()" />
+            </div>
+            <div>
+              <label>سعر الفرخ الافتراضي (مثل الاستيكر بالجنيه):</label>
+              <input type="number" id="setDefaultSheetPrice" step="any" oninput="saveDynamicSettings()" />
+            </div>
+            <div>
+              <label>هامش البنسة من عرض ورقة المكنة (سم):</label>
+              <input type="number" id="setGripperMargin" step="0.5" min="0" oninput="saveDynamicSettings()" />
+            </div>
+          </div>
+        </div>
+
+        <!-- ب) إدارة أسعار الأفرخ الخاصة (استيكر / كوشيه بالفرخ / برستول...) -->
+        <div class="card full mb">
+          <div class="card-header">
+            <div class="card-header-left">
+              <div class="card-icon ci-gold">🏷️</div>
+              <div>
+                <h2>قائمة أسعار الأفرخ الجاهزة (للحساب بالفرخ المباشر)</h2>
+                <p>أضف أنواع الأفرخ التي تشتريها بالفرخ (مثل: استيكر، كوشيه بالفرخ، دوبلكس...) لتختارها بضغطة واحدة</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="field-row-3" style="align-items: end;">
+            <div>
+              <label>اسم الخامة / الفرخ:</label>
+              <input type="text" id="newSheetPresetName" placeholder="مثال: فرخ استيكر" style="margin-bottom:0;" />
+            </div>
+            <div>
+              <label>سعر الفرخ (جنيه):</label>
+              <input type="number" id="newSheetPresetPrice" placeholder="مثال: 16" step="any" style="margin-bottom:0;" />
+            </div>
+            <div>
+              <button type="button" class="calc-btn" onclick="addSheetPreset()" style="padding: 10px;">
+                + إضافة للقائمة السريعة
+              </button>
+            </div>
+          </div>
+
+          <div class="settings-grid" id="sheetPresetsContainer"></div>
+        </div>
+
+        <!-- ج) إدارة المقاسات السريعة وأوزان الجرام -->
+        <div class="grid mb">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-header-left">
+                <div class="card-icon ci-green">📐</div>
+                <div>
+                  <h2>إدارة المقاسات السريعة</h2>
+                  <p>تظهر كأزرار سريعة في خانة مقاس التصميم</p>
+                </div>
+              </div>
+            </div>
+            <div class="field-row-3" style="align-items: end;">
+              <div>
+                <label>اسم المقاس:</label>
+                <input type="text" id="newSizeName" placeholder="مثال: A4" style="margin-bottom:0;" />
+              </div>
+              <div>
+                <label>الطول (سم):</label>
+                <input type="number" id="newSizeL" placeholder="29.7" step="any" style="margin-bottom:0;" />
+              </div>
+              <div>
+                <label>العرض (سم):</label>
+                <input type="number" id="newSizeW" placeholder="21" step="any" style="margin-bottom:0;" />
+              </div>
+            </div>
+            <button type="button" class="calc-btn" onclick="addSizePreset()" style="margin-top: 10px; padding: 9px;">
+              + إضافة مقاس سريع
+            </button>
+            <div class="settings-grid" id="sizePresetsContainer"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-header-left">
+                <div class="card-icon ci-purple">⚖️</div>
+                <div>
+                  <h2>إدارة أوزان الجرام (كوشيه/طبع)</h2>
+                  <p>الأوزان المتاحة عند الحساب بسعر الطن</p>
+                </div>
+              </div>
+            </div>
+            <div class="field-row" style="align-items: end;">
+              <div>
+                <label>وزن الجرام الجديد:</label>
+                <input type="number" id="newGramVal" placeholder="مثال: 170" step="1" style="margin-bottom:0;" />
+              </div>
+              <div>
+                <button type="button" class="calc-btn" onclick="addGramPreset()" style="padding: 9px;">
+                  + إضافة جرام
+                </button>
+              </div>
+            </div>
+            <div class="settings-grid" id="gramPresetsContainer"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="toast" id="toast"></div>
 
     <script>
-      // ============= CONSTANTS =============
+      // ============= DEFAULT CONFIG & SETTINGS =============
       const PAPER_SPECS = {
         "70x100": {
           sheetW: 70,
@@ -1296,15 +1556,43 @@
         },
       };
 
-      const PRINT_PRICES = { 1: 100, 4: 400 };
-      const ZINKAT_PRICES = { 1: 65, 4: 250 };
+      const DEFAULT_CONFIG = {
+        print1Price: 100,
+        print4Price: 400,
+        zink1Price: 65,
+        zink4Price: 250,
+        rajSheetsSize: 1000,
+        defaultSheetDivisor: 4,
+        defaultTonPrice: 58,
+        defaultDirectSheetPrice: 16,
+        gripperMargin: 1,
+        grammages: [70, 80, 115, 130, 150, 200, 250, 300, 350],
+        sheetPresets: [
+          { id: "sp1", name: "فرخ استيكر", price: 16 },
+          { id: "sp2", name: "استيكر شفاف / بلاستيك", price: 25 },
+          { id: "sp3", name: "فرخ كوشيه ثقيل", price: 12 },
+          { id: "sp4", name: "فرخ برستول / كرتون", price: 18 }
+        ],
+        sizePresets: [
+          { id: "sz1", name: "A4 (21×29.7)", l: 21, w: 29.7 },
+          { id: "sz2", name: "A5 (14.8×21)", l: 14.8, w: 21 },
+          { id: "sz3", name: "A6 (10.5×14.8)", l: 10.5, w: 14.8 },
+          { id: "sz4", name: "كارت شخصي (9×5.5)", l: 9, w: 5.5 },
+          { id: "sz5", name: "17×24 سم", l: 17, w: 24 }
+        ]
+      };
+
+      let appConfig = {};
 
       // ============= STATE =============
       let state = {
+        pricingMode: "ton", // 'ton' or 'sheet'
         paperType: "70x100",
         grammage: 150,
         tonPriceInput: null,
         tonPrice: 0,
+        directSheetPrice: 16,
+        sheetDivisor: 4, // Default is 4, user can change to 6, 8, etc.
         designLength: 0,
         designWidth: 0,
         quarterSheets: 0,
@@ -1316,6 +1604,260 @@
         profitMode: "percent", // 'percent' or 'fixed'
         profitVal: 0,
       };
+
+      // ============= LOAD & SAVE SETTINGS =============
+      function loadConfig() {
+        const saved = localStorage.getItem("pro_print_config_v4");
+        if (saved) {
+          try {
+            appConfig = { ...DEFAULT_CONFIG, ...JSON.parse(saved) };
+          } catch (e) {
+            appConfig = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+          }
+        } else {
+          appConfig = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+        }
+
+        // Populate settings inputs
+        document.getElementById("setPrint1").value = appConfig.print1Price;
+        document.getElementById("setPrint4").value = appConfig.print4Price;
+        document.getElementById("setZink1").value = appConfig.zink1Price;
+        document.getElementById("setZink4").value = appConfig.zink4Price;
+        document.getElementById("setRajSize").value = appConfig.rajSheetsSize;
+        document.getElementById("setDefaultDivisor").value = appConfig.defaultSheetDivisor;
+        document.getElementById("setDefaultTon").value = appConfig.defaultTonPrice;
+        document.getElementById("setDefaultSheetPrice").value = appConfig.defaultDirectSheetPrice;
+        document.getElementById("setGripperMargin").value = appConfig.gripperMargin;
+
+        // Apply defaults to calculator
+        state.sheetDivisor = appConfig.defaultSheetDivisor || 4;
+        document.getElementById("sheetDivisorInput").value = state.sheetDivisor;
+        highlightDivisorButtons(state.sheetDivisor);
+
+        const savedTon = localStorage.getItem("saved_ton_price");
+        document.getElementById("tonPrice").value = savedTon !== null ? savedTon : appConfig.defaultTonPrice;
+
+        const savedSheetP = localStorage.getItem("saved_direct_sheet_price");
+        document.getElementById("directSheetPriceInput").value =
+          savedSheetP !== null ? savedSheetP : appConfig.defaultDirectSheetPrice;
+
+        renderDynamicUI();
+      }
+
+      function saveConfigToStorage() {
+        localStorage.setItem("pro_print_config_v4", JSON.stringify(appConfig));
+      }
+
+      function saveDynamicSettings() {
+        appConfig.print1Price = parseFloatVal("setPrint1") ?? 100;
+        appConfig.print4Price = parseFloatVal("setPrint4") ?? 400;
+        appConfig.zink1Price = parseFloatVal("setZink1") ?? 65;
+        appConfig.zink4Price = parseFloatVal("setZink4") ?? 250;
+        appConfig.rajSheetsSize = Math.max(1, parseFloatVal("setRajSize") || 1000);
+        appConfig.defaultSheetDivisor = Math.max(1, parseFloatVal("setDefaultDivisor") || 4);
+        appConfig.defaultTonPrice = parseFloatVal("setDefaultTon") ?? 58;
+        appConfig.defaultDirectSheetPrice = parseFloatVal("setDefaultSheetPrice") ?? 16;
+        appConfig.gripperMargin = parseFloatVal("setGripperMargin") ?? 1;
+
+        saveConfigToStorage();
+        updatePriceLabels();
+        autoCalc();
+      }
+
+      function resetDefaultSettings() {
+        if (!confirm("هل تريد استعادة جميع الأسعار والإعدادات الافتراضية؟")) return;
+        appConfig = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+        saveConfigToStorage();
+        loadConfig();
+        autoCalc();
+        showToast("🔄 تمت استعادة الإعدادات الافتراضية بنجاح");
+      }
+
+      function updatePriceLabels() {
+        document.getElementById("lblPrint1").textContent = appConfig.print1Price;
+        document.getElementById("lblPrint4").textContent = appConfig.print4Price;
+        document.getElementById("lblZink1").textContent = appConfig.zink1Price;
+        document.getElementById("lblZink4").textContent = appConfig.zink4Price;
+        document.getElementById("trajHeaderSub").textContent =
+          `كل ${appConfig.rajSheetsSize} ورقة (أو كسرها) = تراج واحد`;
+      }
+
+      function renderDynamicUI() {
+        updatePriceLabels();
+        renderGrammages();
+        renderSheetPresets();
+        renderSizePresets();
+      }
+
+      function renderGrammages() {
+        const group = document.getElementById("grammageGroup");
+        const container = document.getElementById("gramPresetsContainer");
+        group.innerHTML = "";
+        container.innerHTML = "";
+
+        if (!appConfig.grammages.includes(state.grammage)) {
+          state.grammage = appConfig.grammages[0] || 150;
+        }
+
+        appConfig.grammages.forEach((g) => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "btn-toggle" + (g === state.grammage ? " active" : "");
+          btn.textContent = g;
+          btn.onclick = () => selectGrammage(g, btn);
+          group.appendChild(btn);
+
+          container.innerHTML += `
+            <div class="setting-item-card">
+              <div>
+                <h4>وزن ${g} جرام</h4>
+              </div>
+              <div class="action-row">
+                <button class="act-btn del-act" onclick="deleteGramPreset(${g})">🗑️ حذف</button>
+              </div>
+            </div>
+          `;
+        });
+      }
+
+      function addGramPreset() {
+        const val = parseInt(document.getElementById("newGramVal").value, 10);
+        if (!val || val <= 0) return showToast("⚠️ أدخل رقم جرام صحيح");
+        if (!appConfig.grammages.includes(val)) {
+          appConfig.grammages.push(val);
+          appConfig.grammages.sort((a, b) => a - b);
+          saveConfigToStorage();
+          renderGrammages();
+          autoCalc();
+        }
+        document.getElementById("newGramVal").value = "";
+        showToast("✅ تم إضافة وزن الجرام");
+      }
+
+      function deleteGramPreset(val) {
+        if (appConfig.grammages.length <= 1) return showToast("⚠️ يجب ترك وزن جرام واحد على الأقل");
+        appConfig.grammages = appConfig.grammages.filter((g) => g !== val);
+        saveConfigToStorage();
+        renderGrammages();
+        autoCalc();
+      }
+
+      function renderSheetPresets() {
+        const chips = document.getElementById("sheetPresetChips");
+        const container = document.getElementById("sheetPresetsContainer");
+        chips.innerHTML = "";
+        container.innerHTML = "";
+
+        appConfig.sheetPresets.forEach((sp) => {
+          const chip = document.createElement("button");
+          chip.type = "button";
+          chip.className = "preset-chip";
+          chip.textContent = `${sp.name} (${sp.price} ج)`;
+          chip.onclick = () => {
+            document.getElementById("directSheetPriceInput").value = sp.price;
+            onDirectSheetPriceInput();
+          };
+          chips.appendChild(chip);
+
+          container.innerHTML += `
+            <div class="setting-item-card">
+              <div>
+                <h4>${sp.name}</h4>
+                <div class="sub-val">${sp.price} جنيه للفرخ</div>
+              </div>
+              <div class="action-row">
+                <button class="act-btn" onclick="editSheetPreset('${sp.id}')">✏️ تعديل السعر</button>
+                <button class="act-btn del-act" onclick="deleteSheetPreset('${sp.id}')">🗑️</button>
+              </div>
+            </div>
+          `;
+        });
+      }
+
+      function addSheetPreset() {
+        const name = document.getElementById("newSheetPresetName").value.trim();
+        const price = parseFloat(document.getElementById("newSheetPresetPrice").value);
+        if (!name || isNaN(price) || price <= 0) return showToast("⚠️ أدخل اسم الفرخ وسعره");
+        appConfig.sheetPresets.push({ id: "sp_" + Date.now(), name, price });
+        saveConfigToStorage();
+        renderSheetPresets();
+        document.getElementById("newSheetPresetName").value = "";
+        document.getElementById("newSheetPresetPrice").value = "";
+        showToast("✅ تم حفظ سعر الفرخ في القائمة");
+      }
+
+      function editSheetPreset(id) {
+        const item = appConfig.sheetPresets.find((x) => x.id === id);
+        if (!item) return;
+        const newName = prompt("تعديل اسم الفرخ:", item.name);
+        if (newName === null) return;
+        const newPrice = prompt("تعديل سعر الفرخ (جنيه):", item.price);
+        if (newPrice === null) return;
+        const p = parseFloat(newPrice);
+        if (newName.trim() && !isNaN(p) && p > 0) {
+          item.name = newName.trim();
+          item.price = p;
+          saveConfigToStorage();
+          renderSheetPresets();
+          showToast("✅ تم تحديث السعر");
+        }
+      }
+
+      function deleteSheetPreset(id) {
+        appConfig.sheetPresets = appConfig.sheetPresets.filter((x) => x.id !== id);
+        saveConfigToStorage();
+        renderSheetPresets();
+      }
+
+      function renderSizePresets() {
+        const chips = document.getElementById("sizePresetChips");
+        const container = document.getElementById("sizePresetsContainer");
+        chips.innerHTML = "";
+        container.innerHTML = "";
+
+        appConfig.sizePresets.forEach((sz) => {
+          const chip = document.createElement("button");
+          chip.type = "button";
+          chip.className = "preset-chip";
+          chip.textContent = sz.name;
+          chip.onclick = () => setPresetSize(sz.l, sz.w);
+          chips.appendChild(chip);
+
+          container.innerHTML += `
+            <div class="setting-item-card">
+              <div>
+                <h4>${sz.name}</h4>
+                <div class="sub-val">${sz.l} × ${sz.w} سم</div>
+              </div>
+              <div class="action-row">
+                <button class="act-btn del-act" onclick="deleteSizePreset('${sz.id}')">🗑️ حذف</button>
+              </div>
+            </div>
+          `;
+        });
+      }
+
+      function addSizePreset() {
+        const name = document.getElementById("newSizeName").value.trim();
+        const l = parseFloat(document.getElementById("newSizeL").value);
+        const w = parseFloat(document.getElementById("newSizeW").value);
+        if (!name || isNaN(l) || isNaN(w) || l <= 0 || w <= 0) {
+          return showToast("⚠️ أدخل اسم المقاس والطول والعرض");
+        }
+        appConfig.sizePresets.push({ id: "sz_" + Date.now(), name, l, w });
+        saveConfigToStorage();
+        renderSizePresets();
+        document.getElementById("newSizeName").value = "";
+        document.getElementById("newSizeL").value = "";
+        document.getElementById("newSizeW").value = "";
+        showToast("✅ تم إضافة المقاس السريع");
+      }
+
+      function deleteSizePreset(id) {
+        appConfig.sizePresets = appConfig.sizePresets.filter((x) => x.id !== id);
+        saveConfigToStorage();
+        renderSizePresets();
+      }
 
       // ============= HELPERS & TOAST =============
       function showToast(msg) {
@@ -1332,6 +1874,15 @@
         return val === "" ? null : parseFloat(val);
       }
 
+      // ============= PRICING MODE & SHEET DIVISION =============
+      function selectPricingMode(mode, btn) {
+        state.pricingMode = mode;
+        toggleGroup("pricingModeGroup", btn);
+        document.getElementById("tonPricingSection").style.display = mode === "ton" ? "block" : "none";
+        document.getElementById("sheetPricingSection").style.display = mode === "sheet" ? "block" : "none";
+        autoCalc();
+      }
+
       function onTonPriceInput() {
         let val = document.getElementById("tonPrice").value.trim();
         if (val !== "") {
@@ -1340,6 +1891,36 @@
         autoCalc();
       }
 
+      function onDirectSheetPriceInput() {
+        let val = document.getElementById("directSheetPriceInput").value.trim();
+        if (val !== "") {
+          localStorage.setItem("saved_direct_sheet_price", val);
+        }
+        autoCalc();
+      }
+
+      function setSheetDivisor(div) {
+        state.sheetDivisor = div;
+        document.getElementById("sheetDivisorInput").value = div;
+        highlightDivisorButtons(div);
+        autoCalc();
+      }
+
+      function onManualDivisorInput() {
+        let val = parseFloatVal("sheetDivisorInput");
+        state.sheetDivisor = val && val > 0 ? val : 4;
+        highlightDivisorButtons(state.sheetDivisor);
+        autoCalc();
+      }
+
+      function highlightDivisorButtons(div) {
+        document.querySelectorAll("#sheetDivGroup .btn-toggle").forEach((btn) => {
+          const btnVal = parseInt(btn.textContent, 10);
+          btn.classList.toggle("active", btnVal === div);
+        });
+      }
+
+      // ============= PROFIT & DESIGN SIZES =============
       function setProfitMode(mode) {
         state.profitMode = mode;
         document.getElementById("modePercentBtn").classList.toggle("active", mode === "percent");
@@ -1396,7 +1977,7 @@
           document.getElementById("quarterSheetsInput").value = "";
           autoCalc();
         } else {
-          showToast("⚠️ أدخل طول وعرض التصميم أولاً لحساب عدد الورق من القطع");
+          autoCalc();
         }
       }
 
@@ -1405,6 +1986,12 @@
         state.tonPriceInput = tonRaw;
         state.tonPrice = tonRaw !== null && !isNaN(tonRaw) ? tonRaw * 1000 : 0;
 
+        let directRaw = parseFloatVal("directSheetPriceInput");
+        state.directSheetPrice = directRaw !== null && !isNaN(directRaw) ? directRaw : 0;
+
+        let divRaw = parseFloatVal("sheetDivisorInput");
+        state.sheetDivisor = divRaw && divRaw > 0 ? divRaw : 4;
+
         state.designLength = parseFloatVal("designLength") || 0;
         state.designWidth = parseFloatVal("designWidth") || 0;
         state.quarterSheets = parseFloatVal("quarterSheetsInput") || 0;
@@ -1412,7 +1999,11 @@
         state.profitVal = parseFloatVal("profitValue") || 0;
       }
 
-      function calcSheetPrice() {
+      // حساب سعر الفرخ الكبير وسعر الورقة المقسومة (سواء بالطن أو بالفرخ المباشر)
+      function calcFullSheetPrice() {
+        if (state.pricingMode === "sheet") {
+          return state.directSheetPrice || 0;
+        }
         let spec = PAPER_SPECS[state.paperType];
         if (!state.tonPrice || !state.grammage) return 0;
         return (state.tonPrice * state.grammage * spec.areaM2) / 1_000_000;
@@ -1420,8 +2011,9 @@
 
       function piecesPerQuarter() {
         let spec = PAPER_SPECS[state.paperType];
+        let margin = appConfig.gripperMargin !== undefined ? appConfig.gripperMargin : 1;
         let usableW = spec.cutW;
-        let usableH = spec.cutH - 1;
+        let usableH = Math.max(1, spec.cutH - margin);
         let dL = state.designLength,
           dW = state.designWidth;
         if (!dL || !dW || dL <= 0 || dW <= 0) return { total: 0, rows: 0, cols: 0 };
@@ -1432,18 +2024,30 @@
           : { total: fit2, rows: Math.floor(usableH / dW), cols: Math.floor(usableW / dL) };
       }
 
+      // حساب فوري لكل جزء حتى لو باقي الخانات فاضية
       function computeCosts() {
         let qSheets = state.quarterSheets || 0;
-        if (qSheets <= 0 || state.tonPrice <= 0) return null;
+        let div = state.sheetDivisor || 4;
+        let fullSheetPrice = calcFullSheetPrice();
+        let smallPaperPrice = div > 0 ? fullSheetPrice / div : 0;
 
-        let sheetPrice = calcSheetPrice();
-        let sheetsNeeded = Math.ceil(qSheets / 4);
-        let paperCost = sheetsNeeded * sheetPrice;
+        // عدد الأفرخ الكاملة = عدد الورق ÷ رقم قسمة الفرخ (4 تلقائياً أو 6 أو 8...)
+        let exactFullSheets = qSheets > 0 ? Math.round((qSheets / div) * 100) / 100 : 0;
+        let sheetsNeeded = qSheets > 0 ? Math.ceil(qSheets / div) : 0;
 
-        let rajs = Math.ceil(qSheets / 1000);
-        let printCost = rajs * state.sides * PRINT_PRICES[state.printColors];
+        // تكلفة الورق: (سعر الفرخ ÷ عدد الورق اللي بيطلعه الفرخ) × عدد الورق (أو عدد الأفرخ × سعر الفرخ)
+        let paperCost = qSheets * smallPaperPrice;
+        let paperCostByFullSheets = sheetsNeeded * fullSheetPrice;
 
-        let zinkatCost = ZINKAT_PRICES[state.zinkatColors] * state.zinkatSides;
+        // حساب التراجات
+        let rajSize = appConfig.rajSheetsSize || 1000;
+        let rajs = qSheets > 0 ? Math.ceil(qSheets / rajSize) : 0;
+        let printUnitPrice = state.printColors === 4 ? appConfig.print4Price : appConfig.print1Price;
+        let printCost = rajs * state.sides * printUnitPrice;
+
+        // حساب الزنكات (تظهر دائماً حتى لو الورق صفر)
+        let zinkUnitPrice = state.zinkatColors === 4 ? appConfig.zink4Price : appConfig.zink1Price;
+        let zinkatCost = zinkUnitPrice * state.zinkatSides;
 
         let total = paperCost + printCost + zinkatCost + (state.extraCost || 0);
 
@@ -1459,17 +2063,25 @@
         let finalClientTotal = total + profitAmount;
 
         let fit = piecesPerQuarter();
-        let totalPieces = fit.total > 0 ? qSheets * fit.total : 0;
+        let totalPieces = fit.total > 0 && qSheets > 0 ? qSheets * fit.total : (parseFloatVal("targetPiecesInput") || 0);
+        let piecesPerFullSheet = fit.total > 0 ? fit.total * div : 0;
         let unitCost = totalPieces > 0 ? total / totalPieces : 0;
         let clientUnitCost = totalPieces > 0 ? finalClientTotal / totalPieces : 0;
 
         return {
-          sheetPrice,
+          pricingMode: state.pricingMode,
+          sheetPrice: fullSheetPrice,
+          smallPaperPrice,
+          sheetDivisor: div,
           quarterSheets: qSheets,
+          exactFullSheets,
           sheetsNeeded,
           paperCost,
+          paperCostByFullSheets,
           rajs,
+          printUnitPrice,
           printCost,
+          zinkUnitPrice,
           zinkatCost,
           total,
           profitMode: state.profitMode,
@@ -1477,6 +2089,8 @@
           profitAmount,
           finalClientTotal,
           totalPieces,
+          piecesPerQuarterCount: fit.total,
+          piecesPerFullSheet,
           unitCost,
           clientUnitCost,
           spec: PAPER_SPECS[state.paperType],
@@ -1503,9 +2117,12 @@
         let zColorTxt = data.zinkatColors === 4 ? "4 ألوان" : "1 لون";
         let zSideTxt = data.zinkatSides === 2 ? "وش وظهر" : "وش فقط";
 
-        // السعر النهائي للعميل (لو محفوظ أو محسوب)
         let clientPrice = data.finalClientTotal !== undefined ? data.finalClientTotal : data.total;
         let profitAmt = data.profitAmount || 0;
+        let paperDesc =
+          data.pricingMode === "sheet"
+            ? `فرخ خاص / استيكر (سعر الفرخ ${data.sheetPrice.toFixed(2)} ج)`
+            : `${spec.name || data.paperType} — ${data.grammage} جرام`;
 
         let lines = [];
 
@@ -1514,15 +2131,15 @@
           lines.push("━━━━━━━━━━━━━━");
           if (data.client) lines.push(`👤 *العميل:* ${data.client}`);
           if (data.desc) lines.push(`📌 *الشغلانة:* ${data.desc}`);
-          lines.push(`📄 *الخامة:* ورق ${data.grammage} جرام`);
+          lines.push(`📄 *الخامة:* ${data.pricingMode === "sheet" ? "خامة بالفرخ / استيكر" : `ورق ${data.grammage} جرام`}`);
           if (data.designLength && data.designWidth) {
             lines.push(`📐 *المقاس:* ${data.designLength}×${data.designWidth} سم`);
           }
           lines.push(`🎨 *الطباعة:* ${colorTxt} (${sideTxt})`);
           if (data.totalPieces > 0) {
             lines.push(`📦 *الكمية الصافية:* ${data.totalPieces.toLocaleString()} قطعة`);
-          } else {
-            lines.push(`📦 *الكمية:* ${data.quarterSheets} ورقة ربع`);
+          } else if (data.quarterSheets > 0) {
+            lines.push(`📦 *الكمية:* ${data.quarterSheets} ورقة`);
           }
           if (data.extraNote) {
             lines.push(`✨ *تشطيبات إضافية:* ${data.extraNote}`);
@@ -1534,16 +2151,16 @@
           lines.push("━━━━━━━━━━━━━━");
           if (data.client) lines.push(`👤 *العميل:* ${data.client}`);
           if (data.desc) lines.push(`📌 *الشغلانة:* ${data.desc}`);
-          lines.push(`📄 *الورق:* ${spec.name || data.paperType} — ${data.grammage} جرام`);
+          lines.push(`📄 *الورق:* ${paperDesc}`);
           if (data.designLength && data.designWidth) {
             lines.push(`📐 *مقاس القص:* ${data.designLength}×${data.designWidth} سم`);
           }
-          lines.push(`📦 *الكمية:* ${data.quarterSheets} ورقة ربع (${data.sheetsNeeded} فرخ كامل)`);
+          lines.push(`📦 *الكمية:* ${data.quarterSheets} ورقة (قسمة الفرخ ÷${data.sheetDivisor || 4} = ${data.exactFullSheets || data.sheetsNeeded} فرخ)`);
           if (data.totalPieces > 0) {
             lines.push(`🔢 *إجمالي القطع:* ${data.totalPieces.toLocaleString()} قطعة`);
           }
           lines.push("━━━━━━━━━━━━━━");
-          lines.push(`💵 *تكلفة الورق:* ${data.paperCost.toFixed(2)} ج (${data.sheetsNeeded} فرخ × ${data.sheetPrice.toFixed(2)} ج)`);
+          lines.push(`💵 *تكلفة الورق:* ${data.paperCost.toFixed(2)} ج (${data.quarterSheets} ورقة × ${(data.smallPaperPrice || 0).toFixed(2)} ج)`);
           lines.push(`🖨️ *تكلفة الطباعة:* ${data.printCost.toFixed(2)} ج (${data.rajs} تراج × ${sideTxt} — ${colorTxt})`);
           lines.push(`🔲 *تكلفة الزنكات:* ${data.zinkatCost.toFixed(2)} ج (${zColorTxt} — ${zSideTxt})`);
           if (data.extraCost > 0) {
@@ -1569,11 +2186,7 @@
       }
 
       function shareCurrentWhatsApp(mode) {
-        if (!window._lastResult) {
-          showToast("⚠️ أدخل سعر الطن وعدد الورق أولاً لحساب التكلفة قبل المشاركة!");
-          return;
-        }
-        let r = window._lastResult;
+        let r = window._lastResult || computeCosts();
         let currentData = {
           client: document.getElementById("clientName").value.trim(),
           phone: document.getElementById("clientPhone").value.trim(),
@@ -1601,17 +2214,19 @@
         openWhatsApp(order.phone || "", msg);
       };
 
-      // ============= UI UPDATES =============
+      // ============= LIVE UI UPDATES =============
       function updateCutPreview() {
         let fit = piecesPerQuarter();
         let preview = document.getElementById("cutPreview");
         if (fit.total > 0) {
           preview.style.display = "flex";
+          let fullSheetPieces = fit.total * (state.sheetDivisor || 4);
           document.getElementById("cutCountText").textContent =
-            `الورقة الربع تطلع ${fit.total} قطعة (${fit.rows} × ${fit.cols})`;
+            `ورقة المكنة تطلع ${fit.total} قطعة (${fit.rows}×${fit.cols}) | والفرخ الكامل يطلع ${fullSheetPieces} قطعة`;
           let spec = PAPER_SPECS[state.paperType];
+          let margin = appConfig.gripperMargin !== undefined ? appConfig.gripperMargin : 1;
           document.getElementById("cutDetails").textContent =
-            `المساحة الصافية بعد سنتيمتر البنسة: ${spec.cutW}×${spec.cutH - 1} سم`;
+            `المساحة الصافية بعد ${margin} سم البنسة: ${spec.cutW}×${spec.cutH - margin} سم`;
           let visual = document.getElementById("cutVisual");
           let maxR = Math.min(fit.rows, 5),
             maxC = Math.min(fit.cols, 5);
@@ -1628,28 +2243,43 @@
         }
       }
 
-      function updateRajPreview() {
-        let el = document.getElementById("rajPreview");
-        let qty = state.quarterSheets || 0;
-        if (qty <= 0) {
-          el.innerHTML = "💡 أكتب عدد الأوراق الربع لتظهر تفاصيل التراجات";
-          return;
-        }
-        let rajs = Math.ceil(qty / 1000);
-        let pricePerRaj = PRINT_PRICES[state.printColors];
+      function updateLiveMiniBoxes(r) {
+        // 1. Live sheet & divided paper price
+        document.getElementById("liveFullSheetPrice").textContent = r.sheetPrice.toFixed(2) + " ج";
+        document.getElementById("liveDivLabel").textContent = "÷" + r.sheetDivisor;
+        document.getElementById("liveSmallPaperPrice").textContent = r.smallPaperPrice.toFixed(2) + " ج / ورقة";
+
+        // 2. Live paper count & cost box
+        document.getElementById("liveFullSheetsCount").textContent =
+          r.exactFullSheets === r.sheetsNeeded
+            ? r.sheetsNeeded
+            : `${r.exactFullSheets} (تُقرب إلى ${r.sheetsNeeded})`;
+        document.getElementById("livePaperFormulaText").textContent =
+          `(${r.quarterSheets} ورقة ÷ ${r.sheetDivisor} = ${r.exactFullSheets} فرخ) × ${r.sheetPrice.toFixed(2)} ج`;
+        document.getElementById("livePaperTotalCost").textContent = r.paperCost.toFixed(2) + " ج";
+
+        // 3. Live Printing Traj box
+        let rajEl = document.getElementById("rajPreview");
         let sideTxt = state.sides === 2 ? "وش وظهر" : "وش فقط";
-        el.innerHTML =
-          `<strong style="color:var(--press-blue)">${rajs} تراج</strong> × ${state.sides} وجه (${sideTxt}) × ${pricePerRaj} ج = <strong style="color:var(--success)">${(rajs * state.sides * pricePerRaj).toFixed(2)} ج</strong>`;
+        if (r.quarterSheets > 0) {
+          rajEl.innerHTML =
+            `<strong style="color:var(--press-blue)">${r.rajs} تراج</strong> × ${state.sides} وجه (${sideTxt}) × ${r.printUnitPrice} ج = <strong style="color:var(--success); font-size:0.95rem;">${r.printCost.toFixed(2)} ج</strong>`;
+        } else {
+          rajEl.innerHTML =
+            `سعر التراج الحالي: <strong style="color:var(--press-blue)">${r.printUnitPrice} ج</strong> (${sideTxt} = <strong>${(r.printUnitPrice * state.sides).toFixed(2)} ج</strong> لكل ${appConfig.rajSheetsSize} ورقة)`;
+        }
+
+        // 4. Live Zinkat box
+        let zinkEl = document.getElementById("zinkatLiveBox");
+        let zColorTxt = state.zinkatColors === 4 ? "4 ألوان" : "1 لون";
+        let zSideTxt = state.zinkatSides === 2 ? "طقمين (وش وظهر)" : "طقم واحد (وش)";
+        zinkEl.innerHTML =
+          `تكلفة الزنكات المختارة الآن (${zColorTxt} — ${zSideTxt}): <strong style="color:var(--crimson); font-size:0.95rem;">${r.zinkatCost.toFixed(2)} ج</strong>`;
       }
 
       function updateProfitPreview(r) {
         let finalEl = document.getElementById("finalClientPriceDisplay");
         let subEl = document.getElementById("profitBreakdownDisplay");
-        if (!r) {
-          finalEl.textContent = "0.00 ج";
-          subEl.textContent = "التكلفة: 0 ج | مكسبك: 0 ج";
-          return;
-        }
         finalEl.textContent = r.finalClientTotal.toFixed(2) + " ج";
         let pctText =
           r.profitVal > 0 && r.profitMode === "percent" ? ` (${r.profitVal}%)` : "";
@@ -1657,48 +2287,77 @@
       }
 
       function renderResults(r) {
+        updateLiveMiniBoxes(r);
         updateProfitPreview(r);
-        if (!r) {
-          document.getElementById("resultsArea").innerHTML =
-            '<div class="results-placeholder"><span class="icon">🖨️</span>أدخل سعر الطن وعدد الورق ليظهر الحساب فوراً</div>';
-          return;
-        }
+
         let spec = r.spec;
-        let pieces = piecesPerQuarter();
-        let designInfo =
-          pieces.total > 0
-            ? `<div class="result-item">
-                 <label>إجمالي القطع الصافية</label>
-                 <div class="val gold">${r.totalPieces.toLocaleString()} قطعة</div>
-                 <div class="unit">القطعة عليك: ${r.unitCost.toFixed(2)} ج | للعميل: ${r.clientUnitCost.toFixed(2)} ج</div>
-               </div>`
-            : "";
-        let extraRow =
-          state.extraCost > 0
-            ? `<div class="result-item"><label>إضافات وتشطيب</label><div class="val">${state.extraCost.toFixed(2)}</div><div class="unit">جنيه</div></div>`
-            : "";
+        let modeBadge =
+          r.pricingMode === "sheet"
+            ? `بالفرخ المباشر (÷${r.sheetDivisor})`
+            : `وزن ${state.grammage} جم (÷${r.sheetDivisor})`;
+
         let zinkatDesc =
           (state.zinkatColors === 4 ? "4 ألوان" : "1 لون") +
           " — " +
           (state.zinkatSides === 2 ? "طقمين (وش وظهر)" : "طقم واحد (وش)");
-        let rajInfo = `${r.rajs} تراج × ${state.sides} وجه × ${PRINT_PRICES[state.printColors]} ج`;
+        let rajInfo = `${r.rajs} تراج × ${state.sides} وجه × ${r.printUnitPrice} ج`;
+
+        let piecesCard = `
+          <div class="result-item">
+            <label>إجمالي القطع وتكلفة القطعة</label>
+            <div class="val gold">${r.totalPieces > 0 ? r.totalPieces.toLocaleString() + " قطعة" : "—"}</div>
+            <div class="unit">
+              ${
+                r.totalPieces > 0
+                  ? `القطعة عليك: ${r.unitCost.toFixed(2)} ج | للعميل: ${r.clientUnitCost.toFixed(2)} ج`
+                  : "أدخل مقاس التصميم أو عدد القطع لحساب تكلفة القطعة"
+              }
+            </div>
+          </div>
+        `;
+
+        let extraRow =
+          state.extraCost > 0
+            ? `<div class="result-item"><label>إضافات وتشطيب</label><div class="val">${state.extraCost.toFixed(2)} ج</div><div class="unit">${document.getElementById("extraNote").value || "خدمات إضافية"}</div></div>`
+            : "";
 
         document.getElementById("resultsArea").innerHTML = `
           <div class="result-grid">
-            <div class="result-item"><label>سعر الفرخ الكبير (${spec.name})</label><div class="val">${r.sheetPrice.toFixed(2)} ج</div><div class="unit">وزن ${state.grammage} جرام</div></div>
-            <div class="result-item"><label>الورق المطلوب</label><div class="val">${r.sheetsNeeded} فرخ كامل</div><div class="unit">يعطي ${r.quarterSheets} ورقة ربع</div></div>
-            <div class="result-item"><label>إجمالي تكلفة الورق</label><div class="val gold">${r.paperCost.toFixed(2)} ج</div><div class="unit">${r.sheetsNeeded} فرخ × ${r.sheetPrice.toFixed(2)} ج</div></div>
-            <div class="result-item"><label>تكلفة الطباعة</label><div class="val">${r.printCost.toFixed(2)} ج</div><div class="unit">${rajInfo}</div></div>
-            <div class="result-item"><label>تكلفة الزنكات</label><div class="val">${r.zinkatCost.toFixed(2)} ج</div><div class="unit">${zinkatDesc}</div></div>
-            ${designInfo}
+            <div class="result-item">
+              <label>سعر الفرخ / وسعر الورقة</label>
+              <div class="val">${r.sheetPrice.toFixed(2)} ج للفرخ</div>
+              <div class="unit">الورقة بعد القسمة (÷${r.sheetDivisor}): ${r.smallPaperPrice.toFixed(2)} ج</div>
+            </div>
+            <div class="result-item">
+              <label>عدد الأفرخ والورق المطلوب</label>
+              <div class="val">${r.exactFullSheets} فرخ كامل</div>
+              <div class="unit">يعطي ${r.quarterSheets} ورقة (${modeBadge})</div>
+            </div>
+            <div class="result-item">
+              <label>إجمالي تكلفة الورق</label>
+              <div class="val gold">${r.paperCost.toFixed(2)} ج</div>
+              <div class="unit">${r.quarterSheets} ورقة × ${r.smallPaperPrice.toFixed(2)} ج (أو ${r.exactFullSheets} فرخ × ${r.sheetPrice.toFixed(2)} ج)</div>
+            </div>
+            <div class="result-item">
+              <label>تكلفة الطباعة (التراجات)</label>
+              <div class="val">${r.printCost.toFixed(2)} ج</div>
+              <div class="unit">${rajInfo}</div>
+            </div>
+            <div class="result-item">
+              <label>تكلفة الزنكات (CTP)</label>
+              <div class="val">${r.zinkatCost.toFixed(2)} ج</div>
+              <div class="unit">${zinkatDesc}</div>
+            </div>
+            ${piecesCard}
             ${extraRow}
           </div>
           <div class="raj-breakdown">
             <span><strong>إجمالي التكلفة الأساسية:</strong> ${r.total.toFixed(2)} ج</span>
+            <span><strong>تكلفة الورق بالفرخ الصحيح (${r.sheetsNeeded} فرخ):</strong> ${r.paperCostByFullSheets.toFixed(2)} ج</span>
             ${r.profitAmount > 0 ? `<span><strong>المكسب المضاف:</strong> +${r.profitAmount.toFixed(2)} ج</span>` : ""}
           </div>
           <div class="total-bar">
-            <div class="tlabel">💰 السعر النهائي للعميل</div>
+            <div class="tlabel">💰 السعر النهائي للعميل (يتحدث تلقائياً)</div>
             <div class="amount">${r.finalClientTotal.toFixed(2)} جنيه</div>
           </div>`;
       }
@@ -1706,15 +2365,9 @@
       function autoCalc() {
         readInputs();
         updateCutPreview();
-        updateRajPreview();
         let result = computeCosts();
-        if (result) {
-          renderResults(result);
-          window._lastResult = result;
-        } else {
-          renderResults(null);
-          window._lastResult = null;
-        }
+        renderResults(result);
+        window._lastResult = result;
       }
 
       // ============= UI TOGGLES =============
@@ -1728,8 +2381,6 @@
       function selectPaperType(type, btn) {
         state.paperType = type;
         toggleGroup("paperTypeGroup", btn);
-        document.getElementById("paperInfo70").style.display = type === "70x100" ? "flex" : "none";
-        document.getElementById("paperInfo66").style.display = type === "66x88" ? "flex" : "none";
         onDesignSizeChange();
       }
 
@@ -1816,11 +2467,11 @@
       }
 
       function saveOrder() {
-        if (!window._lastResult) {
-          showToast("⚠️ أدخل سعر الطن وعدد الورق أولاً لحفظ الطلب!");
+        let r = window._lastResult || computeCosts();
+        if (!r || r.total <= 0) {
+          showToast("⚠️ أدخل بيانات الشغلانة أولاً لحفظ الطلب!");
           return;
         }
-        let r = window._lastResult;
         let order = {
           id: Date.now(),
           client: document.getElementById("clientName").value.trim(),
@@ -1890,15 +2541,19 @@
             ? ` | <span style="color:var(--success);font-weight:700;">مكسب: +${o.profitAmount.toFixed(2)} ج</span>`
             : "";
 
+        let paperTag =
+          o.pricingMode === "sheet"
+            ? `فرخ بسعر ${o.sheetPrice} ج (÷${o.sheetDivisor || 4})`
+            : `${spec.name || o.paperType} (${o.grammage} جم)`;
+
         return `
           <div class="order-card ${isDone ? "done-card" : ""}">
             <div style="flex:1;min-width:0">
               <div class="order-client">${clientDisplay} ${phoneBadge} ${doneBadge}</div>
               ${o.desc ? `<div class="order-detail">📌 ${o.desc}</div>` : ""}
               <div class="order-meta">
-                <span class="info-pill">${spec.name || o.paperType}</span>
-                <span class="info-pill">${o.grammage} جم</span>
-                <span class="info-pill">${o.sheetsNeeded || Math.ceil(o.quarterSheets / 4)} فرخ (${o.quarterSheets} ربع)</span>
+                <span class="info-pill">${paperTag}</span>
+                <span class="info-pill">${o.exactFullSheets || o.sheetsNeeded || 0} فرخ (${o.quarterSheets} ورقة)</span>
                 <span class="info-pill">${o.printColors === 4 ? "4 ألوان" : "1 لون"}</span>
                 <span class="info-pill">${o.sides === 2 ? "وش وظهر" : "وش فقط"}</span>
                 ${o.designLength ? `<span class="info-pill">📐 ${o.designLength}×${o.designWidth} سم</span>` : ""}
@@ -1979,20 +2634,17 @@
         state.quarterSheets = 0;
         state.extraCost = 0;
         state.profitVal = 0;
-        renderResults(null);
+        state.sheetDivisor = appConfig.defaultSheetDivisor || 4;
+        document.getElementById("sheetDivisorInput").value = state.sheetDivisor;
+        highlightDivisorButtons(state.sheetDivisor);
         document.getElementById("cutPreview").style.display = "none";
-        document.getElementById("rajPreview").innerHTML =
-          "💡 أكتب عدد الأوراق الربع لتظهر تفاصيل التراجات";
-        window._lastResult = null;
-        showToast("✨ تم تصفير الحاسبة (مع الاحتفاظ بسعر الطن)");
+        autoCalc();
+        showToast("✨ تم تصفير الحاسبة (مع الاحتفاظ بأسعار الطن والفرخ)");
       }
 
       // ============= INITIALIZE =============
       window.addEventListener("DOMContentLoaded", () => {
-        const savedTon = localStorage.getItem("saved_ton_price");
-        if (savedTon) {
-          document.getElementById("tonPrice").value = savedTon;
-        }
+        loadConfig();
         autoCalc();
         updateBadges();
       });
